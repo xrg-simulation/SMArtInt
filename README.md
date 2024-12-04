@@ -1,6 +1,6 @@
 ![Image](SMArtInt-library.jpg)
 
-This is the new home for the library. The old repository with double ii is still available here.
+This is the new home for the library. The old repository with double ii is still available [here](https://github.com/xrg-simulation/SMArtIInt).
 
 The **SMArtInt Library** is designed to integrate various artificial intelligence (AI) models seamlessly into Modelica-based simulation tools. **SMArtInt**, short for **S**imple **M**odelica **Art**ificial **I**ntelligence I**nt**erface, provides a user-friendly interface that bridges advanced AI capabilities with the power of Modelica simulations, enhancing both modeling efficiency and simulation accuracy.
 
