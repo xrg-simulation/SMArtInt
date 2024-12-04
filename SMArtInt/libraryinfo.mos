@@ -6,9 +6,9 @@ LibraryInfoMenuCommand(
      category="libraries",
     text="SMArtInt",
     reference="SMArtInt",
-      version="%version%",
+      version="0.3.1",
       isModel=true,
-      description="SMArtInt Library v%version%",
+      description="SMArtInt Library v0.3.1",
 	  iconName="Resources/Images/SMArtInt_Icon.png",
       ModelicaVersion=">=4.0.0",
       pos=4010)
