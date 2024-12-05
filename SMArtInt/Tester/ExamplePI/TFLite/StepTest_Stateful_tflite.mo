@@ -1,5 +1,6 @@
 within SMArtInt.Tester.ExamplePI.TFLite;
 model StepTest_Stateful_tflite
+  extends Modelica.Icons.Example;
   extends TFLite.StepTest_RNN_tflite(redeclare TFLite.TF_PI_Stateful_tflite controller);
 
   annotation (
