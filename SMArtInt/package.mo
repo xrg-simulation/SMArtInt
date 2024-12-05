@@ -9,10 +9,5 @@ annotation (uses(Modelica(version="4.0.0")),
         fillColor={255,255,255},
         fillPattern=FillPattern.Solid), Bitmap(extent={{-100,-100},{100,100}}, fileName=
             "modelica://SMArtInt/Resources/Images/SMArtInt_Icon.png")}),
-    version="0.5.0",
-    conversion(
-      from(
-        version="0.1.1",
-        to="0.2.0",
-        script="modelica://SMArtInt/Resources/ConversionScripts/Conversion_0.1.1_to_0.2.0.mos")));
+    version="0.5.0");
 end SMArtInt;
