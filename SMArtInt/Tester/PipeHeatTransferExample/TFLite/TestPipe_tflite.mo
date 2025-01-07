@@ -24,5 +24,6 @@ equation
   connect(source.ports[1], pipe.port_a) annotation (Line(points={{-60,0},{-10,0}}, color={0,127,255}));
   connect(fixedHeatFlow.port, pipe.heatPorts) annotation (Line(points={{-16,32},{0.1,32},{0.1,4.4}}, color={191,0,0}));
   connect(sink.ports[1], pipe.port_b) annotation (Line(points={{48,0},{10,0}}, color={0,127,255}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(coordinateSystem(preserveAspectRatio=false)));
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(coordinateSystem(preserveAspectRatio=false)),
+    experiment(StopTime=100, __Dymola_Algorithm="Dassl"));
 end TestPipe_tflite;
