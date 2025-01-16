@@ -1,5 +1,5 @@
 within SMArtInt.BaseClasses;
-model BaseFeedForwardNeuralNet
+partial model BaseFeedForwardNeuralNet
   extends BaseGenericNeuralNet(
     final stateful=false,
     final outputSizes={batchSize, numberOfOutputs},
