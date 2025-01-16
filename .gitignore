@@ -5,11 +5,8 @@ CMakeSettings.json
 CSource/cmake-build*
 CSource/out/*
 
-SMArtInt/Resources/Library/win64/*
-!SMArtInt/Resources/Library/win64/Delay-V1.lib
-!SMArtInt/Resources/Library/win64/SMArtInt.dll
-!SMArtInt/Resources/Library/win64/tensorflowlite_c.dll
-!SMArtInt/Resources/Library/win64/onnxruntime_c.dll
+SMArtInt/Resources/Library/win64/*.exp
+SMArtInt/Resources/Library/win64/*.pdb
 
 CSource/build*/
 
