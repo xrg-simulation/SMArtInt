@@ -5,8 +5,8 @@ CMakeSettings.json
 CSource/cmake-build*
 CSource/out/*
 
-SMArtInt/Resources/Library/win64/*.exp
 SMArtInt/Resources/Library/win64/*.pdb
+SMArtInt/Resources/Library/win64/*.exp
 
 CSource/build*/
 
