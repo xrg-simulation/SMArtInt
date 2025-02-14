@@ -13,6 +13,6 @@ equation
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>This is a specialized version of the EvaluateGenericNeuralNetwork. It can be used for neural networks which use several scalar inputs and outputs. The user has to create the wanted inputs and has to connect them to the input of the block. This input has the same shape [batchSize, numberOfInputs] of the input used in the tensorflow model. The individual input have to be fed into the last dimension. A batch size can be used simultaniously calculation.</p>
-<p>The example <a href=\"modelica://SMArtInt.Tester.PipeHeatTransferExample.PipeLocalHeatTransfer\">PipeLocalHeatTransfer</a> uses this block.</p>
+<p>The example <a href=\"modelica://SMArtInt.Tester.PipeHeatTransferExample.TFLite.PipeLocalHeatTransfer_tflite\">PipeLocalHeatTransfer_tflite</a> uses this block.</p>
 </html>"));
 end EvaluateSimpleFeedForwardNeuralNetwork;

@@ -24,7 +24,7 @@ model Overview
 <ul>
 <li>Tensorflow (<a href=\"https://github.com/tensorflow/tensorflow\">https://github.com/tensorflow/tensorflow</a>)<br>License: <a href=\"https://github.com/tensorflow/tensorflow/blob/master/LICENSE\">https://github.com/tensorflow/tensorflow/blob/master/LICENSE</a> </li>
 <li>Bazel.exe (<a href=\"https://github.com/bazelbuild/bazel\">https://github.com/bazelbuild/bazel</a>)<br>License: <a href=\"https://github.com/bazelbuild/bazel/blob/master/LICENSE\">https://github.com/bazelbuild/bazel/blob/master/LICENSE</a> </li>
-<li>ClaRa Delay (<a href=\"https://github.com/xrg-simulation/ClaRaDelay\">https://github.com/xrg-simulation/ClaRaDelay</a>)<br>License: <a href=\"https://github.com/xrg-simulation/ClaRaDelay/blob/main/LICENSE\">https://github.com/xrg-simulation/ClaRaDelay/blob/main/LICENSE</a> </li>
+<li>ClaRa Delay (<a href=\"https://github.com/xrg-simulation/ClaRaDelay\">https://github.com/xrg-simulation/ClaRaDelay</a>)<br>License: <a href=\"https://github.com/xrg-simulation/ClaRaDelay/blob/main/CSource/LICENSE\">https://github.com/xrg-simulation/ClaRaDelay/blob/main/CSource/LICENSE</a> </li>
 <li>ONNX Runtime (<a href=\"https://github.com/microsoft/onnxruntime\">https://github.com/microsoft/onnxruntime</a>)<br>License: <a href=\"https://github.com/microsoft/onnxruntime/blob/main/LICENSE\">https://github.com/microsoft/onnxruntime/blob/main/LICENSE</a> </li>
 </ul>
 <p>This work was carried out within the framework of the research project DIZPROVI, supported by the Federal Ministry of Education and Research (number 03WIR0105E). </p>

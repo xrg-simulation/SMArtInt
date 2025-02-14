@@ -7,11 +7,11 @@ annotation (Documentation(info="<html>
 <p>Steps to include a model:</p>
 <ol>
 <li>Create and train a model in TensorFlow</li>
-<li>Export a trained TensorFlow model as TfLite model</li>
+<li>Export a trained TensorFlow model as TfLite or ONNX model</li>
 <li>Place the corresponding block in your model</li>
 <li>Parametrize the block (provide path, number of in- and outputs, etc.)</li>
 <li>Connect the in- and outputs of the block. The arrays have the same structure as those in TensorFlow: the inputs have to be connected in the same manner as they are used in the neural network during training.</li>
 </ol>
-<p><br>The examples <a href=\"modelica://SMArtInt.Tester.PipeHeatTransferExample.PipeLocalHeatTransfer\">PipeLocalHeatTransfer</a> and <a href=\"modelica://SMArtInt.Tester.ExamplePI.TF_PI_RNN\">TF_PI_Stateful</a> use this approach.</p>
+<p><br>The examples <a href=\"modelica://SMArtInt.Tester.PipeHeatTransferExample.TFLite.PipeLocalHeatTransfer_tflite\">PipeLocalHeatTransfer_tflite</a> and <a href=\"modelica://SMArtInt.Tester.ExamplePI.TFLite.TF_PI_Stateful_tflite\">TF_PI_Stateful_tflite</a> use this approach.</p>
 </html>"));
 end Blocks;

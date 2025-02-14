@@ -13,7 +13,7 @@ partial model BaseGenericNeuralNet
 <p>The most likely use case of this model is with a multi-layer perceptron neural network. </p>
 <p>In order to include a neural network in Model, extend this base class in your own model. After extending you have to</p>
 <ul>
-<li>give the path of the TFLite model</li>
+<li>give the path of the TFLite/ONNX model</li>
 <li>specify the number of dimensions for in and output</li>
 <li>specify the vector sizes in each input and output dimension</li>
 <li>create input and output connectors</li>
