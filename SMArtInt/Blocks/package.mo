@@ -8,7 +8,7 @@ package Blocks
 <p>Steps to include a model:</p>
 <ol>
 <li>Create and train a model in, e.g., TensorFlow</li>
-<li>Export a trained TensorFlow model as TfLite or ONNX model</li>
+<li>Export a trained model as TfLite or ONNX model</li>
 <li>Place the corresponding block in your model</li>
 <li>Parametrize the block (provide path, number of in- and outputs, etc.)</li>
 <li>Connect the in- and outputs of the block. The arrays have the same structure as those in the AI model (e.g. TensorFlow): the inputs have to be connected in the same manner as they are used in the neural network during training.</li>

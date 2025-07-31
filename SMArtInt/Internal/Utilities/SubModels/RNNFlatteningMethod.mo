@@ -3,4 +3,4 @@ type RNNFlatteningMethod = enumeration(
     NewFirstTimeSeq,
     NewFirstInputSeq,
     OldFirstTimeSeq,
-    OldFIrstInputSeq) annotation ();
+    OldFIrstInputSeq) annotation();
