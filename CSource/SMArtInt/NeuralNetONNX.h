@@ -2,6 +2,7 @@
 // Created by TimHanke on 08.10.2024.
 //
 
+#include <cstdint>
 #include "NeuralNet.h"
 
 #ifndef SMARTIINT_NEURALNETONNX_H

@@ -9,33 +9,25 @@ partial model BaseStatefulRecurrentNeuralNet
 
   parameter Integer numberOfInputs=1 "Number of input values" annotation (Dialog(group="Input/Output Sizing"));
   parameter Integer numberOfOutputs=1 "Number of output values" annotation (Dialog(group="Input/Output Sizing"));
-  parameter Integer batchSize=1 "Number of parallel batched simulations"
-    annotation (Dialog(group="Input/Output Sizing"));
+  parameter Integer batchSize=1 "Number of parallel batched simulations" annotation (Dialog(group="Input/Output Sizing"));
 
-  parameter Boolean continuous=true "=true: model operates continuously; input values are delayed"
-    annotation (Dialog(group="RNN Timing Settings"));
+  parameter Boolean continuous=true "=true: model operates continuously; input values are delayed" annotation (Dialog(group="RNN Timing Settings"));
 
 
-  Internal.Utilities.RunInferenceFlatInputStatefulRNN
-                                           runInferenceFlatInputStatefulRNN(
+  Internal.Utilities.RunInferenceFlatInputStatefulRNN runInferenceFlatInputStatefulRNN(
     final nTotalInputsElements=nInputElements,
     final nTotalOutputElements=nOutputElements,
     final smartint=smartint,
     final continuous=continuous,
-    final samplePeriod=samplePeriod)
-                               annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+    final samplePeriod=samplePeriod) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 
-  Internal.Utilities.SubModels.Array2DFlatteningModel array2DFlatteningModel(final numberOfInputs=numberOfInputs,
-      final batchSize=batchSize) annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
-  Internal.Utilities.SubModels.Array2DDeflatteningModel array2DDeflatteningModel(numberOfOutput=numberOfOutputs,
-      batchSize=batchSize) annotation (Placement(transformation(extent={{20,-10},{40,10}})));
+  Internal.Utilities.SubModels.Array2DFlatteningModel array2DFlatteningModel(final numberOfInputs=numberOfInputs, final batchSize=batchSize) annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
+  Internal.Utilities.SubModels.Array2DDeflatteningModel array2DDeflatteningModel(numberOfOutput=numberOfOutputs, batchSize=batchSize) annotation (Placement(transformation(extent={{20,-10},{40,10}})));
 
 equation
 
-  connect(array2DFlatteningModel.flatArray, runInferenceFlatInputStatefulRNN.u)
-    annotation (Line(points={{-20,0},{-9.8,0}}, color={0,0,127}));
-  connect(runInferenceFlatInputStatefulRNN.y, array2DDeflatteningModel.flatArray)
-    annotation (Line(points={{10,0},{20.2,0}}, color={0,0,127}));
+  connect(array2DFlatteningModel.flatArray, runInferenceFlatInputStatefulRNN.u) annotation (Line(points={{-20,0},{-9.8,0}}, color={0,0,127}));
+  connect(runInferenceFlatInputStatefulRNN.y, array2DDeflatteningModel.flatArray) annotation (Line(points={{10,0},{20.2,0}}, color={0,0,127}));
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false)),

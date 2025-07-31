@@ -12,13 +12,10 @@ partial model BaseRecurrentNeuralNet
   parameter Integer batchSize=1 "Number of parallel batched simulations" annotation (Dialog(group="Input/Output Sizing"));
   parameter Boolean returnSequences=false annotation (Dialog(group="Input/Output Sizing"));
 
-  parameter Integer nHistoricElements=10 "Number of elements from sampling steps for each input fed to the neural net"
-    annotation (Dialog(group="RNN Timing Settings"));
-  parameter Boolean continuous=false "=true: model operates continuously; input values are delayed"
-    annotation (Dialog(group="RNN Timing Settings"));
+  parameter Integer nHistoricElements=10 "Number of elements from sampling steps for each input fed to the neural net" annotation (Dialog(group="RNN Timing Settings"));
+  parameter Boolean continuous=false "=true: model operates continuously; input values are delayed" annotation (Dialog(group="RNN Timing Settings"));
 
-  parameter Boolean useClaRaDelay=true "Use the ClaRa delay instead of MSL delay"
-    annotation (Dialog(group="RNN Timing Settings"));
+  parameter Boolean useClaRaDelay=true "Use the ClaRa delay instead of MSL delay" annotation (Dialog(group="RNN Timing Settings"));
 
   Internal.Utilities.RunInterferenceRNN runInterferenceHistory(
     final useClaRaDelay=useClaRaDelay,

@@ -1,10 +1,8 @@
 within SMArtInt.Tester.ExamplePI.TFLite;
 model StepTest_RNN_tflite
   extends Modelica.Icons.Example;
-  replaceable TFLite.TF_PI_RNN_tflite
-                             controller constrainedby Modelica.Blocks.Interfaces.SISO
-    annotation (Placement(transformation(extent={{-10,-10},{10,10}})), choicesAllMatching=true);
-  Modelica.Blocks.Sources.Step step(startTime=10)   annotation (Placement(transformation(extent={{-82,-10},{-62,10}})));
+  replaceable TFLite.TF_PI_RNN_tflite controller constrainedby Modelica.Blocks.Interfaces.SISO annotation (Placement(transformation(extent={{-10,-10},{10,10}})), choicesAllMatching=true);
+  Modelica.Blocks.Sources.Step step(startTime=10) annotation (Placement(transformation(extent={{-82,-10},{-62,10}})));
 equation
   connect(step.y, controller.u) annotation (Line(points={{-61,0},{-10.6,0}}, color={0,0,127}));
   annotation (
@@ -13,5 +11,10 @@ equation
     experiment(
       StopTime=36000,
       Interval=1,
-      __Dymola_Algorithm="Dassl"));
+      __Dymola_Algorithm="Dassl"),
+    Documentation(info="<html>
+  For more detailed information about this model, including explanations of its components and key variables for analysis, please refer to the documentation of the higher-level package <a href=\"modelica://SMArtInt.Tester.ExamplePI\">ExamplePI</a>.
+  <br>
+</html>
+"));
 end StepTest_RNN_tflite;

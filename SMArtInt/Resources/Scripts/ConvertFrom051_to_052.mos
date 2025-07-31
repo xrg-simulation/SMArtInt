@@ -1,0 +1,13 @@
+//Convert Package from SMArtInt 0.5.1
+convertClear();
+
+convertModifiers("SMArtInt.BaseClasses.BaseNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.BaseClasses.BaseGenericNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.BaseClasses.BaseFeedForwardNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.BaseClasses.BaseRecurrentNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.BaseClasses.BaseStatefulRecurrentNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+
+convertModifiers("SMArtInt.Blocks.EvaluateGenericNeuralNetwork",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.Blocks.EvaluateSimpleFeedForwardNeuralNetwork",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.Blocks.EvaluateRecurrentNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);
+convertModifiers("SMArtInt.Blocks.EvaluateStatefulRecurrentNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);

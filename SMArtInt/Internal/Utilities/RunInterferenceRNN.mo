@@ -16,8 +16,7 @@ model RunInterferenceRNN
   parameter Internal.SMArtIntClass smartint;
 
   Modelica.Blocks.Interfaces.RealInput u[nInputs] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y_flat[nOutputs]
-    annotation (Placement(transformation(extent={{78,-20},{118,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y_flat[nOutputs] annotation (Placement(transformation(extent={{78,-20},{118,20}})));
   SubModels.RNNFlattenInput flattenedHistory(
     useClaRaDelay=useClaRaDelay,
     nInputs=nInputs,
@@ -27,8 +26,7 @@ model RunInterferenceRNN
     flatteningMethod=flatteningMethod,
     u=u) annotation (Placement(transformation(extent={{-10,20},{10,40}})));
 
-  SubModels.RNNDeflattenOutput unflattenOutput(nOutputs=nOutputs, nHistoricElements=nHistoricElements)
-    if returnSequences annotation (Placement(transformation(extent={{-10,-40},{10,-20}})));
+  SubModels.RNNDeflattenOutput unflattenOutput(nOutputs=nOutputs, nHistoricElements=nHistoricElements) if returnSequences annotation (Placement(transformation(extent={{-10,-40},{10,-20}})));
 equation
   y_flat[:] = InterfaceFunctions.runInferenceFlatTensor(
     smartint,
@@ -40,7 +38,5 @@ equation
           extent={{-100,100},{100,-100}},
           pattern=LinePattern.None,
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid), Bitmap(extent={{-102,-100},{102,100}},
-          fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}),
-      Diagram(coordinateSystem(preserveAspectRatio=false)));
+          fillPattern=FillPattern.Solid),Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
 end RunInterferenceRNN;

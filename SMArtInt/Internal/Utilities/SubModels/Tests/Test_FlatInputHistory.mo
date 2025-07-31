@@ -3,9 +3,8 @@ model Test_FlatInputHistory
 
   extends Modelica.Icons.Example;
 
-  Real time_ = time;
-  Modelica.Blocks.Sources.RealExpression realExpression(y=sin(time_))
-    annotation (Placement(transformation(extent={{-68,-10},{-48,10}})));
+  Real time_=time;
+  Modelica.Blocks.Sources.RealExpression realExpression(y=sin(time_)) annotation (Placement(transformation(extent={{-68,-10},{-48,10}})));
 
   RNNFlattenInput flatInputHistory_switchDelay(
     useClaRaDelay=true,
@@ -15,7 +14,9 @@ model Test_FlatInputHistory
     u={realExpression.y,-realExpression.y}) annotation (Placement(transformation(extent={{-8,-40},{12,-20}})));
 equation
 
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(coordinateSystem(preserveAspectRatio=false)),
+  annotation (
+    Icon(coordinateSystem(preserveAspectRatio=false)),
+    Diagram(coordinateSystem(preserveAspectRatio=false)),
     experiment(
       StopTime=10,
       Tolerance=1e-05,

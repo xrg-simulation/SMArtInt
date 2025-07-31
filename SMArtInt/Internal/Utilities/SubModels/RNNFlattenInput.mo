@@ -17,7 +17,7 @@ model RNNFlattenInput
 
   parameter RNNFlatteningMethod flatteningMethod=RNNFlatteningMethod.NewFirstInputSeq annotation (Evaluate=true);
 
-  final parameter Modelica.Units.SI.Time startTime( fixed = false);
+  final parameter Modelica.Units.SI.Time startTime(fixed=false);
   Boolean sampleTrigger;
 
   input Real[nInputs] u annotation (Dialog);
@@ -26,8 +26,7 @@ model RNNFlattenInput
 
   //Pointers for inputFlattenTensor2 and delayedInputs
   //Note: in contrast to Modelica delay we need only 1 delay-table pointer per input.
-  SMArtInt.Internal.ClaRaDelay.ExternalTables pointer_inputFlattenTensor=
-      SMArtInt.Internal.ClaRaDelay.ExternalTables(nInputs);
+  SMArtInt.Internal.ClaRaDelay.ExternalTables pointer_inputFlattenTensor=SMArtInt.Internal.ClaRaDelay.ExternalTables(nInputs);
 
   //////////////////////////////////////////////////////////////////////////////////
   //DelayTimes for ClaRaDelay
@@ -118,7 +117,7 @@ equation
   else
     sampleTrigger = sample(startTime, samplePeriod);
 
-    when {sampleTrigger, initial()} then
+    when {sampleTrigger,initial()} then
 
       for t in 1:nHistoricElements loop
         for i in 1:nInputs loop
@@ -132,8 +131,7 @@ equation
             if (t == 1) then
               inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(u[i]);
             else
-              inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(inputFlattenTensor[(t - 1) + (i - 1)*
-                nHistoricElements]);
+              inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(inputFlattenTensor[(t - 1) + (i - 1)*nHistoricElements]);
             end if;
           elseif flatteningMethod == RNNFlatteningMethod.OldFIrstInputSeq then
             if (t == nHistoricElements) then
@@ -145,8 +143,7 @@ equation
             if (t == nHistoricElements) then
               inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(u[i]);
             else
-              inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(inputFlattenTensor[(i - 1)*nHistoricElements + t +
-                1]);
+              inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(inputFlattenTensor[(i - 1)*nHistoricElements + t + 1]);
             end if;
           end if;
         end for;

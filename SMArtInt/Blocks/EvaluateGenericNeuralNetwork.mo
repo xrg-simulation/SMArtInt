@@ -2,15 +2,14 @@ within SMArtInt.Blocks;
 model EvaluateGenericNeuralNetwork
   extends BaseClasses.BaseGenericNeuralNet;
 
-  Modelica.Blocks.Interfaces.RealInput u[nInputElements] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}),
-        iconTransformation(extent={{-110,-10},{-90,10}})));
-  Modelica.Blocks.Interfaces.RealOutput               y
-                                               [nOutputElements] annotation (Placement(transformation(extent={{90,-10},
-            {110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
+  Modelica.Blocks.Interfaces.RealInput u[nInputElements] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}), iconTransformation(extent={{-110,-10},{-90,10}})));
+  Modelica.Blocks.Interfaces.RealOutput y[nOutputElements] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
 equation
-  connect(runInference.u, u) annotation (Line(points={{-10,0},{-100,0}},  color={0,0,127}));
+  connect(runInference.u, u) annotation (Line(points={{-10,0},{-100,0}}, color={0,0,127}));
   connect(runInference.y, y) annotation (Line(points={{10,0},{100,0}}, color={0,0,127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(coordinateSystem(preserveAspectRatio=false)),
+  annotation (
+    Icon(coordinateSystem(preserveAspectRatio=false)),
+    Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>This is the most generic block to include neural networks within Modelica. It extends the BaseGenericNeuralNet and provides generic in- and outputs. It can be used for any neural network. For easier handling the specialized versions EvaluateFeedForwardNeuralNet, EvaluateRecurrentNeuralNet and EvaluateStatefulRecurrentNeuralNet are available.</p>
 <p>This most likely use case of this model is with a multi-layer perceptron neural network. </p>

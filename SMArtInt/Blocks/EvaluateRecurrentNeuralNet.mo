@@ -1,10 +1,8 @@
 within SMArtInt.Blocks;
 model EvaluateRecurrentNeuralNet
   extends BaseClasses.BaseRecurrentNeuralNet;
-  Modelica.Blocks.Interfaces.RealInput u[numberOfInputs] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}),
-        iconTransformation(extent={{-110,-10},{-90,10}})));
-  Modelica.Blocks.Interfaces.RealOutput                  y[numberOfOutputs]
-    annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
+  Modelica.Blocks.Interfaces.RealInput u[numberOfInputs] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}), iconTransformation(extent={{-110,-10},{-90,10}})));
+  Modelica.Blocks.Interfaces.RealOutput y[numberOfOutputs] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
 equation
   connect(runInterferenceHistory.u, u) annotation (Line(points={{-10,0},{-100,0}}, color={0,0,127}));
   connect(runInterferenceHistory.y_flat, y) annotation (Line(points={{9.8,0},{100,0}}, color={0,0,127}));

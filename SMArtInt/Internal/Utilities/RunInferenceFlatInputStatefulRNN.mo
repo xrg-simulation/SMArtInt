@@ -11,8 +11,7 @@ model RunInferenceFlatInputStatefulRNN
   final parameter Modelica.Units.SI.Time startTime(fixed=false);
   Boolean sampleTrigger;
 
-  Modelica.Blocks.Interfaces.RealInput u[nTotalInputsElements]
-    annotation (Placement(transformation(extent={{-118,-20},{-78,20}})));
+  Modelica.Blocks.Interfaces.RealInput u[nTotalInputsElements] annotation (Placement(transformation(extent={{-118,-20},{-78,20}})));
   Modelica.Blocks.Interfaces.RealOutput y[nTotalOutputElements] annotation (Placement(transformation(extent={{80,-20},{120,20}})));
 
 initial equation
@@ -20,7 +19,7 @@ initial equation
 equation
   if continuous then
     sampleTrigger = true;
-    y[:] =InterfaceFunctions.runInferenceFlatTensor(
+    y[:] = InterfaceFunctions.runInferenceFlatTensor(
       smartint,
       time,
       u,
@@ -28,8 +27,8 @@ equation
   else
     sampleTrigger = sample(startTime, samplePeriod);
 
-    when {sampleTrigger, initial()} then
-      y[:] =InterfaceFunctions.runInferenceFlatTensor(
+    when {sampleTrigger,initial()} then
+      y[:] = InterfaceFunctions.runInferenceFlatTensor(
         smartint,
         time,
         u,
@@ -43,7 +42,5 @@ equation
           extent={{-100,100},{100,-100}},
           pattern=LinePattern.None,
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid), Bitmap(extent={{-102,-100},{102,100}},
-          fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}),
-      Diagram(coordinateSystem(preserveAspectRatio=false)));
+          fillPattern=FillPattern.Solid),Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
 end RunInferenceFlatInputStatefulRNN;

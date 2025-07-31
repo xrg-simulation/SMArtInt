@@ -13,8 +13,7 @@ model TestModelEvaluation_onnx
   final parameter Real acc(unit="m/s2") = 1;
   Modelica.Units.SI.Velocity vs;
 
-  replaceable ONNX.NNHeatTransfer_onnx                    heatTransfer constrainedby
-    Modelica.Fluid.Pipes.BaseClasses.HeatTransfer.PartialPipeFlowHeatTransfer(
+  replaceable ONNX.NNHeatTransfer_onnx heatTransfer constrainedby Modelica.Fluid.Pipes.BaseClasses.HeatTransfer.PartialPipeFlowHeatTransfer(
     redeclare final package Medium = Medium,
     final n=n,
     final nParallel=1,
@@ -37,5 +36,10 @@ equation
     experiment(
       StopTime=100,
       __Dymola_NumberOfIntervals=5000,
-      __Dymola_Algorithm="Dassl"));
+      __Dymola_Algorithm="Dassl"),
+    Documentation(info="<html>
+  For more detailed information about this model, including explanations of its components and key variables for analysis, please refer to the documentation of the higher-level package <a href=\"modelica://SMArtInt.Tester.PipeHeatTransferExample\">PipeHeatTransferExample</a>.
+  <br>
+</html>
+"));
 end TestModelEvaluation_onnx;

@@ -3,11 +3,13 @@ partial model BaseGenericNeuralNet
   extends BaseNeuralNet;
 
   Internal.Utilities.RunInferenceFlatInput runInference(
-    final nTotalInputsElements= nInputElements,
+    final nTotalInputsElements=nInputElements,
     final nTotalOutputElements=nOutputElements,
     final smartint=smartint) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(coordinateSystem(preserveAspectRatio=false)),
+  annotation (
+    Icon(coordinateSystem(preserveAspectRatio=false)),
+    Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>This is the most generic base class to include neural networks within Modelica. It can be used for any neural network. For easier handling the specialized versions BaseFeedForwardNeuralNet, BaseRecurrentNeuralNet and BaseStatefulRecurrentNeuralNet are available.</p>
 <p>The most likely use case of this model is with a multi-layer perceptron neural network. </p>

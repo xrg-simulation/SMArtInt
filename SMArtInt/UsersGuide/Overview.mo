@@ -4,8 +4,9 @@ model Overview
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false)),
+    preferredView="info",
     Documentation(info="<html>
-<p><br></span><b><span style=\"font-size: 19.5pt;\">SMArtInt Library</b> </p>
+<p><br></span><b></span><span style=\"font-size: 19.5pt; color: #ffaa00;\">SMArtInt Library</b><span style=\"color: #ffaa00;\"> </span></p>
 <p>The <b>SMArtInt Library</b> is designed to integrate various artificial intelligence (AI) models seamlessly into Modelica-based simulation tools. <b>SMArtInt</b>, short for <b>S</b>imple <b>M</b>odelica <b>Art</b>ificial <b>I</b>ntelligence I<b>nt</b>erface, provides a user-friendly interface that bridges advanced AI capabilities with the power of Modelica simulations, enhancing both modeling efficiency and simulation accuracy. </p>
 <p>Currently, it supports the following tools: </p>
 <ul>
@@ -17,9 +18,10 @@ model Overview
 <li>TensorFlow models exported as TFLite </li>
 <li>ONNX models </li>
 </ul>
-<p>The repository contains a compiled version of the interface for usage in windows. <b>As a starting point open the Modelica Library. It contains some ready to run examples <a href=modelica://SMArtInt.Tester>Tester</a> which demonstrate the usage.</b> The corresponding python files which create the TF-Lite and ONNX models are located in <a href=\"modelica://SMArtInt/Resources/ExampleNeuralNets\">Resources</a>.</p>
+<p>The repository contains a compiled version of the interface for usage in windows. <b>As a starting point open the Modelica Library. It contains some ready to run examples <a href=\"modelica://SMArtInt.Tester\">Tester</a> which demonstrate the usage.</b> The corresponding python files which create the TF-Lite and ONNX models are located in <a href=\"modelica://SMArtInt/Resources/ExampleNeuralNets\">Resources</a>.</p>
 <h4>Hints for usage in Dymola:</h4>
-<p>Currently, only a 64-bit version is available. If the variable <span style=\"font-family: Courier New;\">Advanced.CompileWith64</span> is set on its default value 0, Dymola will automatically compile a 64-bit Dymosim.exe after giving a remark in the translate log file. In case <span style=\"font-family: Courier New;\">Advanced.CompileWith64=2</span> a 64-bit dymosim.exe is created anyway and in case of <span style=\"font-family: Courier New;\">Advanced.CompileWith64=1</span> compilation will fail. </p>
+<p>Currently, only a 64-bit version is available. If the variable <code>Advanced.CompileWith64</code> is set on its default value 0, Dymola will automatically compile a 64-bit Dymosim.exe after giving a remark in the translate log file. In case <code>Advanced.CompileWith64=2</code> a 64-bit dymosim.exe is created anyway and in case of <code>Advanced.CompileWith64=1</code> compilation will fail. </p>
+<h4>Copyright:</h4>
 <p>SMArtInt uses other software - the source code is included as submodule and/or as compiled version for direct usage: </p>
 <ul>
 <li>Tensorflow (<a href=\"https://github.com/tensorflow/tensorflow\">https://github.com/tensorflow/tensorflow</a>)<br>License: <a href=\"https://github.com/tensorflow/tensorflow/blob/master/LICENSE\">https://github.com/tensorflow/tensorflow/blob/master/LICENSE</a> </li>

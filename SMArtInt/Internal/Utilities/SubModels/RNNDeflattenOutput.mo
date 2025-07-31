@@ -7,7 +7,7 @@ model RNNDeflattenOutput
 
   input Real[nHistoricElements*nOutputs] outputFlattenTensor annotation (Dialog);
 
-  output Real[nOutputs, nHistoricElements] y annotation (Dialog);
+  output Real[nOutputs,nHistoricElements] y annotation (Dialog);
 
 equation
   for t in 1:nHistoricElements loop
