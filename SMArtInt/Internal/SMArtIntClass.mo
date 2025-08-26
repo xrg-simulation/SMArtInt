@@ -13,6 +13,7 @@ class SMArtIntClass
     input Integer[n_outputDim] outputSizes "Sizes in each dimensions of input array";
     input Boolean stateful=false;
     input Real fixEvalStep=0;
+    input String pathToResources;
     output SMArtIntClass smartint;
   external "C" smartint = NeuralNet_createObject(
         modelicaUtilityHelper,
@@ -22,7 +23,8 @@ class SMArtIntClass
         n_outputDim,
         outputSizes,
         stateful,
-        fixEvalStep) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+        fixEvalStep,
+        pathToResources) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor

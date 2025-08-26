@@ -7,11 +7,12 @@
 #include "TensorflowDllHandlerWin.h"
 #else
 #include "TensorflowDllHandlerLinux.h"
+#include <filesystem>
 #endif
 
 TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, const char *tfLiteModelPath,
                                  unsigned int dymInputDim, unsigned int *p_dymInputSizes, unsigned int dymOutputDim,
-                                 unsigned int *p_dymOutputSizes, bool stateful, double fixInterval) : NeuralNet(
+                                 unsigned int *p_dymOutputSizes, bool stateful, double fixInterval, const char *resourcesPath) : NeuralNet(
         p_modelicaUtilityHelper, tfLiteModelPath,
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
         stateful, fixInterval) {
@@ -21,14 +22,25 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
         std::string tensorflowDllPath = Utils::getTensorflowDllPathWin();
         mp_tfdll = new TensorflowDllHandlerWin(tensorflowDllPath.c_str());
     } catch (std::runtime_error& e) {
-        mp_modelicaUtilityHelper->ModelicaError("Unable to detect tensorflow path");
+        static std::string msg;
+        msg = std::string("Unable to detect tensorflow path (error): ") + e.what();
+        mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
 #else
     try {
-        std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux();
+        std::string tensorflowDllPath;
+        try {
+            tensorflowDllPath = Utils::getTensorflowDllPathLinux();
+        }
+        catch (std::runtime_error& e){
+            std::filesystem::path fullPath = std::filesystem::path(resourcesPath) / "Library/linux64/libtensorflowlite_c.so";
+            tensorflowDllPath = fullPath.string();
+        }
         mp_tfdll = new TensorflowDllHandlerLinux(tensorflowDllPath.c_str());
     } catch (std::runtime_error& e) {
-        mp_modelicaUtilityHelper->ModelicaError("Unable to detect tensorflow path");
+        static std::string msg;
+        msg = std::string("Unable to detect tensorflow path (error): ") + e.what();
+        mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
 #endif
 

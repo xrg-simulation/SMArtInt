@@ -12,7 +12,7 @@ class TfLiteNeuralNet :public NeuralNet
 public:
     TfLiteNeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char* tfLiteModelPath,
                     unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes,
-                    bool stateful, double fixInterval);
+                    bool stateful, double fixInterval, const char* resourcesPath);
 
     ~TfLiteNeuralNet() override;
 

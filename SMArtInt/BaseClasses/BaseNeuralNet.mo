@@ -2,6 +2,7 @@ within SMArtInt.BaseClasses;
 partial model BaseNeuralNet
 
   parameter String pathToAIModel="" "Choose path to AI model" annotation (Dialog(group="Selected Model", loadSelector(filter="AI models (*.tflite *.onnx)", caption="Open file of AI-Model")));
+  final parameter String resourcePath=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources");
 
   parameter Integer inputDimensions=1 "Number of input dimension" annotation (Dialog(group="Tensor sizing"));
   parameter Integer[inputDimensions] inputSizes={1} "Vector with size of tensor in each dimension" annotation (Dialog(group="Tensor sizing"));
@@ -25,7 +26,8 @@ protected
       outputDimensions,
       outputSizes,
       stateful,
-      samplePeriod);
+      samplePeriod,
+      resourcePath);
 
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={Rectangle(

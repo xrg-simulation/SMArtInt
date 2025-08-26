@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <variant>
 
-void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep)
+void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep, const char* ResourcesPath)
 {
 	auto* p_modelicaUtilityHelper = (ModelicaUtilityHelper*)modelicaUtilityHelper;
 	#ifndef NDEBUG
@@ -24,7 +24,7 @@ void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath,
                 // create TfLiteNeuralNet pointer
                 auto *p_neuralNet = new TfLiteNeuralNet(p_modelicaUtilityHelper, ModelPath,
                                                                    dymInputDim, p_dymInputSizes, dymOutputDim,
-                                                                   p_dymOutputSizes, stateful, fixStep);
+                                                                   p_dymOutputSizes, stateful, fixStep, ResourcesPath);
                 return (void *) p_neuralNet;
 
             } else if (extension == ".onnx") {
