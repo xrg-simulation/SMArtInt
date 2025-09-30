@@ -11,7 +11,7 @@ model PipeLocalHeatTransfer_onnx
     numberOfInputs=3,
     numberOfOutputs=1,
     batchSize=batchSize,
-    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt//Resources//ExampleNeuralNets//NNHeatTransfer//model_large.tflite")) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt//Resources//ExampleNeuralNets//NNHeatTransfer//model.onnx"))         annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 equation
   connect(Re, evalNN.arrayIn[:, 1]) annotation (Line(points={{-100,60},{-40,60},{-40,0},{-9.8,0}}, color={0,0,127}));
   connect(Pr, evalNN.arrayIn[:, 2]) annotation (Line(points={{-100,0},{-9.8,0}}, color={0,0,127}));
