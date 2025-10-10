@@ -4,16 +4,16 @@ model CartPoleDQNTest
 
   parameter Real Ts = 0.01 "Sampling period for observations (s)";
 
-  SubModels.CartPole cartPole(phi_start=-30*Modelica.Constants.pi/180) annotation (Placement(transformation(extent={{-20,-20},{20,20}})));
+  SubModels.CartPole cartPole(phi_start=75*Modelica.Constants.pi/180)  annotation (Placement(transformation(extent={{-20,-20},{20,20}})));
   SMArtInt.Blocks.EvaluateSimpleFeedForwardNeuralNetwork evaluateSimpleFeedForwardNeuralNetwork(
     numberOfInputs=4,
     numberOfOutputs=1,
     pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/TFAgentsCartPole/cart_pole_DQN.tflite"))
                                                                                                                                           annotation (Placement(transformation(origin={-70,0},   extent={{-10,-10},{10,10}})));
-  SubModels.SignalNormalization w_norm(x_min=-5, x_max=5) annotation (Placement(transformation(origin={50,40}, extent={{-10,-10},{10,10}})));
-  SubModels.SignalNormalization pos_cart_norm(x_min=-2.4, x_max=2.4) annotation (Placement(transformation(origin={50,-20}, extent={{-10,-10},{10,10}})));
-  SubModels.SignalNormalization phi_cart_norm(x_min=1.36, x_max=1.78) annotation (Placement(transformation(origin={50,20}, extent={{-10,-10},{10,10}})));
-  SubModels.SignalNormalization v_norm(x_min=-5, x_max=5) annotation (Placement(transformation(origin={50,-40}, extent={{-10,-10},{10,10}})));
+  SubModels.SignalNormalization w_norm(y_min=-5, y_max=5) annotation (Placement(transformation(origin={50,40}, extent={{-10,-10},{10,10}})));
+  SubModels.SignalNormalization pos_cart_norm(y_min=-2.4, y_max=2.4) annotation (Placement(transformation(origin={50,-20}, extent={{-10,-10},{10,10}})));
+  SubModels.SignalNormalization phi_cart_norm(y_min=1.36, y_max=1.78) annotation (Placement(transformation(origin={50,20}, extent={{-10,-10},{10,10}})));
+  SubModels.SignalNormalization v_norm(y_min=-5, y_max=5) annotation (Placement(transformation(origin={50,-40}, extent={{-10,-10},{10,10}})));
 
 // Sampler + ZeroOrderHold (sample & hold) en cada observación
   Modelica.Blocks.Discrete.Sampler      s_pos(samplePeriod=Ts) annotation(

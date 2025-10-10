@@ -1,9 +1,9 @@
 within SMArtInt.Tester.ExampleTFAgentsRL.SubModels;
 model CartPole "Simple Cart Pole Model"
   parameter Boolean animation=true "= true, if animation shall be enabled";
-  inner Modelica.Mechanics.MultiBody.World world(nominalLength=10)
+  inner Modelica.Mechanics.MultiBody.World world(nominalLength=1)
                                                  annotation (Placement(
-        transformation(extent={{-100,-100},{-80,-80}})));
+        transformation(extent={{-90,-90},{-70,-70}})));
   Modelica.Mechanics.MultiBody.Joints.Prismatic prismatic(useAxisFlange=true,
     s(fixed=true, start=0),
     v(fixed=true))
