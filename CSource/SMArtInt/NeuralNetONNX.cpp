@@ -45,8 +45,12 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     size_t length = 0;
     mbstowcs_s(&length, nullptr, 0, onnxModelPath, _TRUNCATE);
     auto* model_path_wchar = new wchar_t[length + 1];
-    // Create the interpreter.
     mbstowcs_s(nullptr, model_path_wchar, length + 1, onnxModelPath, length);
+    // thread management
+    mp_options.SetInterOpNumThreads(1);
+    mp_options.SetIntraOpNumThreads(1);
+    mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+    // Create the interpreter.
     mp_session = new Ort::Session(*mp_model,  model_path_wchar, mp_options);
 #else
     mp_session = new Ort::Session(*mp_model,  onnxModelPath, mp_options);
