@@ -12,6 +12,7 @@ class SMArtIntClass
     input Integer[n_outputDim] outputSizes "Sizes in each dimensions of input array";
     input Boolean stateful=false;
     input Real fixEvalStep=0;
+    input Integer numberOfThreads;
     output SMArtIntClass smartint;
   external "C" smartint = NeuralNet_createObject(
         modelicaUtilityHelper,
@@ -21,7 +22,8 @@ class SMArtIntClass
         n_outputDim,
         outputSizes,
         stateful,
-        fixEvalStep) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+        fixEvalStep,
+        numberOfThreads) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor
@@ -37,11 +39,12 @@ class SMArtIntClass
           extent={{-100,-100},{100,100}},
           radius=25.0),
         Rectangle(
-          fillColor = {128,128,128},
-          pattern = LinePattern.None,
-          fillPattern = FillPattern.Solid,
+          fillColor={128,128,128},
+          pattern=LinePattern.None,
+          fillPattern=FillPattern.Solid,
           extent={{-70,-4.5},{0,4.5}}),
-        Polygon(origin={23.3333,0},
+        Polygon(
+          origin={23.3333,0},
           fillColor={128,128,128},
           pattern=LinePattern.None,
           fillPattern=FillPattern.Solid,

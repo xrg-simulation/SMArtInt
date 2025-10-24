@@ -14,7 +14,7 @@ class NeuralNet
 public:
 	NeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char* tfLiteModelPath,
         unsigned int dymInputDim, const unsigned int* p_dymInputSizes, unsigned int dymOutputDim, const unsigned int* p_dymOutputSizes,
-		bool stateful, double fixInterval);
+		bool stateful, double fixInterval, int nThreads);
 
 	virtual ~NeuralNet();
 
@@ -32,5 +32,7 @@ protected:
 	unsigned int m_nOutputEntries; // total number of output elements
 
 	bool m_firstInvoke = true; // flag if outputs needs to be allocated etc
-    bool m_statesInitialized = false;
+    bool m_statesInitialized = false; // flag if states are initialized
+
+	int m_nThreads=1; // number of threads used for inference
 };
