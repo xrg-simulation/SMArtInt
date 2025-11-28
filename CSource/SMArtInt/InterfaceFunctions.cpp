@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <variant>
 
-void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep)
+void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep, int nThreads)
 {
 	auto* p_modelicaUtilityHelper = (ModelicaUtilityHelper*)modelicaUtilityHelper;
 	#ifndef NDEBUG
@@ -24,7 +24,7 @@ void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath,
                 // create TfLiteNeuralNet pointer
                 auto *p_neuralNet = new TfLiteNeuralNet(p_modelicaUtilityHelper, ModelPath,
                                                                    dymInputDim, p_dymInputSizes, dymOutputDim,
-                                                                   p_dymOutputSizes, stateful, fixStep);
+                                                                   p_dymOutputSizes, stateful, fixStep, nThreads);
                 return (void *) p_neuralNet;
 
             } else if (extension == ".onnx") {
@@ -34,7 +34,7 @@ void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath,
                 // to be added later!
                 auto *p_neuralNet = new OnnxNeuralNet(p_modelicaUtilityHelper, ModelPath, dymInputDim,
                                                        p_dymInputSizes, dymOutputDim, p_dymOutputSizes, stateful,
-                                                       fixStep);
+                                                       fixStep, nThreads);
                 return (void *) p_neuralNet;
             } else {
                 std::string message = Utils::string_format("SMArtInt: No known model type recognized  - at path: %s\n",

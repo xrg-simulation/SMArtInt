@@ -100,6 +100,8 @@ public:
     virtual size_t tensorByteSize(const TfLiteTensor* tensor) = 0;
 
     virtual ~TensorflowDllHandler() = default;
+
+    void interpreterOptionsSetNumThreads();
 };
 
 

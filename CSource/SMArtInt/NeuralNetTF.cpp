@@ -11,10 +11,11 @@
 
 TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, const char *tfLiteModelPath,
                                  unsigned int dymInputDim, unsigned int *p_dymInputSizes, unsigned int dymOutputDim,
-                                 unsigned int *p_dymOutputSizes, bool stateful, double fixInterval) : NeuralNet(
+                                 unsigned int *p_dymOutputSizes, bool stateful, double fixInterval,
+                                 int nThreads) : NeuralNet(
         p_modelicaUtilityHelper, tfLiteModelPath,
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
-        stateful, fixInterval) {
+        stateful, fixInterval, nThreads) {
 
 #ifdef _WIN32
     try {
@@ -60,8 +61,10 @@ void TfLiteNeuralNet::loadAndInit(const char* tfliteModelPath)
                                                    m_tfliteModelPath);
         mp_modelicaUtilityHelper->ModelicaError(message.c_str());
     }
+
+    // thread management
     mp_options = mp_tfdll->interpreterOptionsCreate();
-    mp_tfdll->interpreterOptionsSetNumThreads(mp_options, 1);
+    mp_tfdll->interpreterOptionsSetNumThreads(mp_options, m_nThreads);
 
     // Create the interpreter.
     mp_interpreter = mp_tfdll->interpreterCreate(mp_model, mp_options);

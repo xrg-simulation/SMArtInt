@@ -4,14 +4,24 @@
 #include <sstream>
 #include <algorithm>
 #include <filesystem>
+#include <thread>
 
 NeuralNet::NeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim,
-	const unsigned int* p_dymInputSizes, unsigned int dymOutputDim, const unsigned int* p_dymOutputSizes,
-	bool stateful, double fixInterval)
+                     const unsigned int* p_dymInputSizes, unsigned int dymOutputDim, const unsigned int* p_dymOutputSizes,
+                     bool stateful, double fixInterval, int nThreads)
 {
 
 	// set member to access dymola functions
 	mp_modelicaUtilityHelper = p_modelicaUtilityHelper;
+
+	// set the number of threads
+	m_nThreads = (nThreads <= 0) ? static_cast<int>(std::thread::hardware_concurrency())
+	: std::min(nThreads, static_cast<int>(std::thread::hardware_concurrency()));
+	m_nThreads = std::max(m_nThreads, 0);
+	std::string message = "SMArtInt: Using " + Utils::string_format("%i", m_nThreads)
+	+ (m_nThreads == 1 ? " Thread\n" : " Threads\n");
+
+	mp_modelicaUtilityHelper->ModelicaMessage(message.c_str());
 
 	// handling of the input
 	m_inputDim = static_cast<int32_t>(dymInputDim);

@@ -12,10 +12,11 @@
 
 OnnxNeuralNet::OnnxNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, const char *onnxModelPath,
                              unsigned int dymInputDim, unsigned int *p_dymInputSizes, unsigned int dymOutputDim,
-                             unsigned int *p_dymOutputSizes, bool stateful, double fixInterval) : NeuralNet(
+                             unsigned int *p_dymOutputSizes, bool stateful, double fixInterval,
+                             int nThreads) : NeuralNet(
         p_modelicaUtilityHelper, onnxModelPath,
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
-        stateful, fixInterval) {
+        stateful, fixInterval, nThreads) {
 
     mp_timeStepMngmt = new InputManagementONNX(stateful, fixInterval, m_nInputEntries);
 
@@ -40,13 +41,18 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 
     mp_model = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test_onnx");
 
+    // thread management
+    mp_options.SetInterOpNumThreads(m_nThreads);
+    mp_options.SetIntraOpNumThreads(m_nThreads);
+    mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+
 #ifdef _MSC_VER
     // convert const char* in wchar_t*
     size_t length = 0;
     mbstowcs_s(&length, nullptr, 0, onnxModelPath, _TRUNCATE);
     auto* model_path_wchar = new wchar_t[length + 1];
-    // Create the interpreter.
     mbstowcs_s(nullptr, model_path_wchar, length + 1, onnxModelPath, length);
+    // Create the interpreter.
     mp_session = new Ort::Session(*mp_model,  model_path_wchar, mp_options);
 #else
     mp_session = new Ort::Session(*mp_model,  onnxModelPath, mp_options);

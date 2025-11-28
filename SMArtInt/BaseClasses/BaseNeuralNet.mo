@@ -14,6 +14,8 @@ partial model BaseNeuralNet
   parameter Boolean stateful=false "Activate state handling for RNN with state in-/outputs" annotation (Dialog(group="RNN Timing Settings"));
   parameter Real samplePeriod=0 "Fixed sample period for RNNs" annotation (Dialog(group="RNN Timing Settings"));
 
+  parameter Integer numberOfThreads=1 "Number of threads used for inference (0: Number of CPU cores)" annotation (Dialog(group="Performance", tab="Advanced"));
+
 protected
   final parameter SMArtInt.Internal.ModelicaUtilityHelper modelicaUtilityHelper=SMArtInt.Internal.ModelicaUtilityHelper();
 
@@ -25,7 +27,8 @@ protected
       outputDimensions,
       outputSizes,
       stateful,
-      samplePeriod);
+      samplePeriod,
+      numberOfThreads);
 
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={Rectangle(
@@ -33,7 +36,7 @@ protected
           lineColor={28,108,200},
           pattern=LinePattern.None,
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid),Bitmap(extent={{-100,-100},{100,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}),
+          fillPattern=FillPattern.Solid), Bitmap(extent={{-100,-100},{100,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}),
     Diagram(coordinateSystem(preserveAspectRatio=false)),
     Documentation(info="<html>
 <p>This base class defines the parameter interface for all classes using the TfLite/ONNX interface. This class does not contain any evaluation call of a TfLite/ONNX model and therefore it should not be used.</p>

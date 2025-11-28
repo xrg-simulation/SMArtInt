@@ -12,8 +12,8 @@ class OnnxNeuralNet :public NeuralNet
 {
 public:
     OnnxNeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char* onnxModelPath,
-                  unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes,
-                  bool stateful, double fixInterval);
+                  unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim,
+                  unsigned int* p_dymOutputSizes, bool stateful, double fixInterval, int nThreads);
 
     ~OnnxNeuralNet() override;
 
