@@ -42,11 +42,9 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     mp_model = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test_onnx");
 
     // thread management
-    if (m_nThreads > 0) {
-        mp_options.SetInterOpNumThreads(m_nThreads);
-        mp_options.SetIntraOpNumThreads(m_nThreads);
-        mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-    }
+    mp_options.SetInterOpNumThreads(m_nThreads);
+    mp_options.SetIntraOpNumThreads(m_nThreads);
+    mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
 #ifdef _MSC_VER
     // convert const char* in wchar_t*

@@ -64,12 +64,7 @@ void TfLiteNeuralNet::loadAndInit(const char* tfliteModelPath)
 
     // thread management
     mp_options = mp_tfdll->interpreterOptionsCreate();
-    if (m_nThreads > 0) {
-        mp_tfdll->interpreterOptionsSetNumThreads(mp_options, m_nThreads);
-    }
-    else {
-        mp_tfdll->interpreterOptionsSetNumThreads(mp_options, 1);
-    }
+    mp_tfdll->interpreterOptionsSetNumThreads(mp_options, m_nThreads);
 
     // Create the interpreter.
     mp_interpreter = mp_tfdll->interpreterCreate(mp_model, mp_options);

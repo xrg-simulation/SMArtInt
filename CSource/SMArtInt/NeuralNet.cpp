@@ -15,12 +15,12 @@ NeuralNet::NeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char*
 	mp_modelicaUtilityHelper = p_modelicaUtilityHelper;
 
 	// set the number of threads
-	m_nThreads = (nThreads == -1) ? static_cast<int>(std::thread::hardware_concurrency())
+	m_nThreads = (nThreads <= 0) ? static_cast<int>(std::thread::hardware_concurrency())
 	: std::min(nThreads, static_cast<int>(std::thread::hardware_concurrency()));
 	m_nThreads = std::max(m_nThreads, 0);
-	std::string message = (m_nThreads == 0)
-		? "SMArtInt: Using default number of Threads\n"
-		: "SMArtInt: Using " + Utils::string_format("%i", m_nThreads) + " Threads\n";
+	std::string message = "SMArtInt: Using " + Utils::string_format("%i", m_nThreads)
+	+ (m_nThreads == 1 ? " Thread\n" : " Threads\n");
+
 	mp_modelicaUtilityHelper->ModelicaMessage(message.c_str());
 
 	// handling of the input
