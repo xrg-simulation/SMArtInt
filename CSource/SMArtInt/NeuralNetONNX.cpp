@@ -28,10 +28,10 @@ OnnxNeuralNet::~OnnxNeuralNet() {
     //mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Destructor ONNX Neural Network\n");
     // clean up allocated onnx stuff - Correct way?
     delete(mp_session);
-    delete(mp_model);
+    //delete(mp_model);
     delete(input_data);
     delete(tensorData);
-    // clean up time step manager
+    //clean up time step manager
     delete mp_timeStepMngmt;
 }
 
@@ -39,24 +39,68 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 {
     m_onnxModelPath = onnxModelPath;
 
-    mp_model = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test_onnx");
-
-    // thread management
-    mp_options.SetInterOpNumThreads(m_nThreads);
-    mp_options.SetIntraOpNumThreads(m_nThreads);
-    mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-
 #ifdef _MSC_VER
     // convert const char* in wchar_t*
     size_t length = 0;
     mbstowcs_s(&length, nullptr, 0, onnxModelPath, _TRUNCATE);
     auto* model_path_wchar = new wchar_t[length + 1];
     mbstowcs_s(nullptr, model_path_wchar, length + 1, onnxModelPath, length);
-    // Create the interpreter.
-    mp_session = new Ort::Session(*mp_model,  model_path_wchar, mp_options);
-#else
-    mp_session = new Ort::Session(*mp_model,  onnxModelPath, mp_options);
 #endif
+
+
+    mp_model = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test_onnx");
+
+    // Optional CUDA Provider
+    bool cuda_available = false;
+    try {
+        OrtCUDAProviderOptions cuda_options;
+        cuda_options.device_id = 0;
+        //cuda_options.arena_extend_strategy = 0;
+        // cuda_options.do_copy_in_default_stream = 1;
+
+        mp_options.AppendExecutionProvider_CUDA(cuda_options);
+        // mp_options.DisableMemPattern();
+        mp_options.SetExecutionMode(ORT_PARALLEL);
+        mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
+
+        // Create the interpreter.
+#ifdef _MSC_VER
+        mp_session = new Ort::Session(*mp_model,  model_path_wchar, mp_options);
+#else
+        mp_session = new Ort::Session(*mp_model,  onnxModelPath, mp_options);
+#endif
+        cuda_available = true;
+    } catch (const Ort::Exception &e) {
+        auto msg = std::string("[ONNX Runtime] CUDA Provider could not be initialized: ") + e.what() +
+                   "\nFalling back to CPU.\n";
+        mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
+        cuda_available = false;
+    }
+
+    if (cuda_available) {
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Using CUDA Provider\n");
+    } else {
+        try {
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Using CPU Provider\n");
+
+        mp_options = Ort::SessionOptions();
+
+        // thread management
+        mp_options.SetInterOpNumThreads(m_nThreads);
+        mp_options.SetIntraOpNumThreads(m_nThreads);
+        mp_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+
+        // Create the interpreter.
+#ifdef _MSC_VER
+        mp_session = new Ort::Session(*mp_model,  model_path_wchar, mp_options);
+#else
+        mp_session = new Ort::Session(*mp_model,  onnxModelPath, mp_options);
+#endif
+        } catch (const Ort::Exception &e) {
+            auto msg = std::string("[ONNX Runtime] CPU Provider could not be initialized: ") + e.what() + "\n";
+            mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
+        }
+    }
 
     // Allocate tensor buffers.
     Ort::AllocatorWithDefaultOptions allocator;
