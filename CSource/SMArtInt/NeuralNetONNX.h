@@ -21,6 +21,8 @@ public:
 
     void initializeStates(double time, double* p_stateValues, const unsigned int& nStateValues); // function to initialize states with given values
 
+    // Hinweis: Der Output-Modus wird intern automatisch gewählt (CudaPinned bei verfügbarer CUDA, sonst CPU)
+
     const char* m_modelType = "ONNX";
 
 private:
@@ -31,7 +33,15 @@ private:
     Ort::Env* mp_model{}; // pointer to model
     Ort::SessionOptions mp_options; // pointer to model options
     Ort::Session* mp_session{}; // pointer to interpreter
-    Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu( OrtDeviceAllocator, OrtMemTypeDefault); // onnx memory info
+    Ort::IoBinding* mp_binding{}; // IO binding for fast provider IO
+
+    bool m_useGPU{true}; // whether GPU with CUDA is used for inference
+    int m_gpuDeviceId{0}; // device ID of
+    ExecutionMode m_executionMode{ExecutionMode::ORT_SEQUENTIAL};
+    bool m_cudaAvailable{false}; // whether CUDA EP is active
+
+    Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu( OrtDeviceAllocator, OrtMemTypeDefault); // onnx memory info (CPU)
+    Ort::MemoryInfo memInfoCudaPinned{nullptr}; // onnx memory info (CudaPinned), initialized when CUDA is available
 
     std::vector<std::string> m_input_names; // vector with input names
     std::vector<std::int64_t> m_input_shapes; // vector with input shapes
@@ -41,6 +51,9 @@ private:
     std::vector<float>* input_data{}; // data for feature input
     std::vector<std::vector<float>>* tensorData{}; // data for state inputs
     std::vector<Ort::Value> output_tensors; // tensors to store the results
+
+    // Persistent tensor for primary input to avoid per-step allocations
+    Ort::Value m_inputTensor{nullptr};
 
     std::vector<const char*> input_names_char; // input names as char; needed for onnx inference
     std::vector<const char*> output_names_char; // output names as char; needed for onnx inference
