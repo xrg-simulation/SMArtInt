@@ -30,8 +30,10 @@ namespace Utils {
     // methods to retreive dlls
 #ifdef _WIN32
     std::string getTensorflowDllPathWin();
+    std::string getOnnxRuntimeDllPathWin();
 #else
     std::string getTensorflowDllPathLinux();
+    std::string getOnnxRuntimeDllPathLinux();
 #endif
 
 	// individual casting functions

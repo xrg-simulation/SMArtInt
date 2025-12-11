@@ -9,6 +9,11 @@
 #include <sstream>
 #include <chrono>
 #include "Utils.h"
+#ifdef _WIN32
+#include "OnnxRuntimeDllHandlerWin.h"
+#else
+#include "OnnxRuntimeDllHandlerLinux.h"
+#endif
 
 OnnxNeuralNet::OnnxNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, const char *onnxModelPath,
                              unsigned int dymInputDim, unsigned int *p_dymInputSizes, unsigned int dymOutputDim,
@@ -45,6 +50,34 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 {
     m_onnxModelPath = onnxModelPath;
 
+    // Ensure ONNX Runtime is loaded dynamically before using any Ort::* APIs
+    if (!mp_onnxDll) {
+#ifdef _WIN32
+        try {
+            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerWin>(nullptr);
+        } catch (const std::exception& ex) {
+            auto msg = std::string("SMArtInt: Failed to load onnxruntime_c.dll: ") + ex.what() + "\n";
+            mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
+            // Abort further initialization to avoid using uninitialized ORT API
+            return;
+        }
+#else
+        try {
+            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerLinux>(nullptr);
+        } catch (const std::exception& ex) {
+            auto msg = std::string("SMArtInt: Failed to load libonnxruntime_c.so: ") + ex.what() + "\n";
+            mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
+            // Abort further initialization to avoid using uninitialized ORT API
+            return;
+        }
+#endif
+    }
+
+    // Now that ORT API is initialized, create CPU MemoryInfo
+    if (!memInfo) {
+        memInfo = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtDeviceAllocator, OrtMemTypeDefault);
+    }
+
 #ifdef _MSC_VER
     // convert const char* in wchar_t*
     size_t length = 0;
@@ -59,6 +92,8 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     // Optional CUDA Provider
     if (m_useGPU) {
         try {
+            // Ensure SessionOptions is constructed after ORT API init
+            mp_options = Ort::SessionOptions();
             OrtCUDAProviderOptions cuda_options;
             cuda_options.device_id = m_gpuDeviceId;
             //cuda_options.arena_extend_strategy = 0;
@@ -78,7 +113,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 #endif
             m_cudaAvailable = true;
         } catch (const Ort::Exception &e) {
-            auto msg = std::string("[ONNX Runtime] CUDA Provider could not be initialized: ") + e.what() +
+            auto msg = std::string("SMArtInt: [ONNX Runtime] CUDA Provider could not be initialized: ") + e.what() +
                        "\nFalling back to CPU.\n";
             mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
             m_cudaAvailable = false;
@@ -90,8 +125,9 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     } else {
         try {
         mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Using CPU Provider\n");
-
-        mp_options = Ort::SessionOptions();
+        if (!mp_options) {
+            mp_options = Ort::SessionOptions();
+        }
 
         // thread management
         mp_options.SetInterOpNumThreads(m_nThreads);
@@ -106,7 +142,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
         mp_session = new Ort::Session(*mp_model,  onnxModelPath, mp_options);
 #endif
         } catch (const Ort::Exception &e) {
-            auto msg = std::string("[ONNX Runtime] CPU Provider could not be initialized: ") + e.what() + "\n";
+            auto msg = std::string("SMArtInt: [ONNX Runtime] CPU Provider could not be initialized: ") + e.what() + "\n";
             mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
         }
     }
@@ -118,7 +154,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
         // If binding creation fails, continue without it
         mp_binding = nullptr;
         m_cudaAvailable = false; // ensure we don't try to use binding/GPU path
-        mp_modelicaUtilityHelper->ModelicaMessage("[ONNX Runtime] IoBinding could not be created. Falling back to standard Run.\n");
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: [ONNX Runtime] IoBinding could not be created. Falling back to standard Run.\n");
     }
 
     if (m_cudaAvailable && mp_binding) {
@@ -129,7 +165,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
         } catch (const Ort::Exception &e) {
             // If CUDA MemoryInfo is not available, disable CUDA path
             m_cudaAvailable = false;
-            mp_modelicaUtilityHelper->ModelicaMessage("[ONNX Runtime] CUDA MemoryInfo init failed. Falling back to CPU path.\n");
+            mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: [ONNX Runtime] CUDA MemoryInfo init failed. Falling back to CPU path.\n");
         }
     }
 
@@ -208,7 +244,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
             }
         } catch (const Ort::Exception &e) {
             // If binding outputs fails, fall back to standard Run path
-            mp_modelicaUtilityHelper->ModelicaMessage("[ONNX Runtime] Pre-binding failed. Falling back to standard Run.\n");
+            mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: [ONNX Runtime] Pre-binding failed. Falling back to standard Run.\n");
             delete mp_binding; mp_binding = nullptr;
         }
     }
@@ -267,7 +303,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
                 mp_binding->BindInput(input_names_char[i], *mp_timeStepMngmt->mp_OnnxStateInpTensors[i-1]);
             }
         } catch (const Ort::Exception &e) {
-            mp_modelicaUtilityHelper->ModelicaMessage("[ONNX Runtime] Binding state inputs failed. Using standard per-step inputs for states.\n");
+            mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: [ONNX Runtime] Binding state inputs failed. Using standard per-step inputs for states.\n");
         }
     }
 }
@@ -391,7 +427,9 @@ void OnnxNeuralNet::runInferenceFlatTensor(double time, double* input, unsigned 
         if (tensor_info.GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
             const float* tensor_data = output_tensors[0].GetTensorData<float>();
             const size_t elem_count = static_cast<size_t>(tensor_info.GetElementCount());
-            const size_t copy_count = std::min(elem_count, static_cast<size_t>(m_nOutputEntries));
+            const size_t copy_count = (elem_count < static_cast<size_t>(m_nOutputEntries))
+                                      ? elem_count
+                                      : static_cast<size_t>(m_nOutputEntries);
             for (size_t j = 0; j < copy_count; ++j) {
                 output[j] = static_cast<double>(tensor_data[j]);
             }

@@ -3,7 +3,9 @@
 //
 
 #include <cstdint>
+#include <memory>
 #include "NeuralNet.h"
+#include "OnnxRuntimeDllHandler.h"
 
 #ifndef SMARTIINT_NEURALNETONNX_H
 #define SMARTIINT_NEURALNETONNX_H
@@ -31,8 +33,11 @@ private:
 
     InputManagementONNX* mp_timeStepMngmt; // time step manager used for stateful RNNs
 
+    // Dynamic ONNX Runtime loader must outlive all Ort::* objects.
+    std::unique_ptr<OnnxRuntimeDllHandler> mp_onnxDll; 
+
     Ort::Env* mp_model{}; // pointer to model
-    Ort::SessionOptions mp_options; // pointer to model options
+    Ort::SessionOptions mp_options{nullptr}; // model options
     Ort::Session* mp_session{}; // pointer to interpreter
     Ort::IoBinding* mp_binding{}; // IO binding for fast provider IO
 
@@ -41,7 +46,7 @@ private:
     ExecutionMode m_executionMode{ExecutionMode::ORT_SEQUENTIAL};
     bool m_cudaAvailable{false}; // whether CUDA EP is active
 
-    Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu( OrtDeviceAllocator, OrtMemTypeDefault); // onnx memory info (CPU)
+    Ort::MemoryInfo memInfo{nullptr}; // onnx memory info (CPU)
     Ort::MemoryInfo memInfoCudaPinned{nullptr}; // onnx memory info (CudaPinned), initialized when CUDA is available
 
     std::vector<std::string> m_input_names; // vector with input names
