@@ -54,7 +54,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     if (!mp_onnxDll) {
 #ifdef _WIN32
         try {
-            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerWin>(nullptr);
+            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerWin>(nullptr, m_useGPU);
         } catch (const std::exception& ex) {
             auto msg = std::string("SMArtInt: Failed to load onnxruntime_c.dll: ") + ex.what() + "\n";
             mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
@@ -63,7 +63,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
         }
 #else
         try {
-            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerLinux>(nullptr);
+            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerLinux>(nullptr, m_useGPU);
         } catch (const std::exception& ex) {
             auto msg = std::string("SMArtInt: Failed to load libonnxruntime_c.so: ") + ex.what() + "\n";
             mp_modelicaUtilityHelper->ModelicaError(msg.c_str());

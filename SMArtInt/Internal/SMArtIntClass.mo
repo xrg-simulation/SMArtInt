@@ -29,13 +29,13 @@ class SMArtIntClass
         numberOfThreads,
         useGPU,
         gpuDevice,
-        executionMode) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+        executionMode) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu","onnxruntime_providers_cuda","onnxruntime_providers_shared"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor
     extends Modelica.Icons.Function;
     input SMArtIntClass smartint;
-  external "C" NeuralNet_destroyObject(smartint) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+  external "C" NeuralNet_destroyObject(smartint) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu","onnxruntime_providers_cuda","onnxruntime_providers_shared"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end destructor;
   annotation (Icon(graphics={
         Rectangle(

@@ -8,5 +8,5 @@ external "C" NeuralNet_initializeStates(
     smartint,
     time_value,
     flatStateValues,
-    size(flatStateValues, 1)) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+    size(flatStateValues, 1)) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu","onnxruntime_providers_cuda","onnxruntime_providers_shared"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
 end initializeStates;

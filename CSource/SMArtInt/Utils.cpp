@@ -107,7 +107,7 @@ std::string Utils::getTensorflowDllPathWin() {
     return folderPath + "tensorflowlite_c.dll";
 }
 
-std::string Utils::getOnnxRuntimeDllPathWin() {
+std::string Utils::getOnnxRuntimeDllPathWin(bool useGPU) {
     char path[MAX_PATH];
     HMODULE hm = NULL;
 
@@ -130,8 +130,14 @@ std::string Utils::getOnnxRuntimeDllPathWin() {
         folderPath = folderPath.substr(0, lastSlash + 1);
     }
 
-    // Build the new path for onnxruntime_c.dll
-    return folderPath + "onnxruntime_c.dll";
+    // Build the new path depending on useGPU flag
+    // GPU: default onnxruntime_c.dll (with CUDA provider available)
+    // CPU: CPU-optimized DLL name
+    if (useGPU) {
+        return folderPath + "onnxruntime_c.dll";
+    } else {
+        return folderPath + "onnxruntime_c_cpu.dll";
+    }
 }
 #else
 std::string Utils::getTensorflowDllPathLinux() {
@@ -184,7 +190,7 @@ std::string Utils::getTensorflowDllPathLinux() {
     return folderPath + "libtensorflowlite_c.so";
 }
 
-std::string Utils::getOnnxRuntimeDllPathLinux() {
+std::string Utils::getOnnxRuntimeDllPathLinux(bool useGPU) {
     Dl_info dl_info;
 
     if (dladdr((void*) &NeuralNet_createObject, &dl_info) == 0) {
@@ -224,7 +230,12 @@ std::string Utils::getOnnxRuntimeDllPathLinux() {
     if (lastSlash != std::string::npos) {
         folderPath = folderPath.substr(0, lastSlash + 1);
     }
-    return folderPath + "libonnxruntime_c.so";
+    // Select SO based on GPU usage
+    if (useGPU) {
+        return folderPath + "libonnxruntime_c.so";
+    } else {
+        return folderPath + "libonnxruntime_c_cpu.so";
+    }
 }
 
 #ifdef _WIN32

@@ -3,7 +3,7 @@
 
 using OrtGetApiBaseFn = const OrtApiBase* (ORT_API_CALL *)(void);
 
-OnnxRuntimeDllHandlerWin::OnnxRuntimeDllHandlerWin(LPCSTR dllPath)
+OnnxRuntimeDllHandlerWin::OnnxRuntimeDllHandlerWin(LPCSTR dllPath, bool useGPU)
 {
     // Load ONNX Runtime DLL dynamically and initialize C++ API
     // If dllPath is null, try to get from Utils
@@ -12,7 +12,7 @@ OnnxRuntimeDllHandlerWin::OnnxRuntimeDllHandlerWin(LPCSTR dllPath)
         mod = ::LoadLibraryA(dllPath);
     }
     if (!mod) {
-        auto path = Utils::getOnnxRuntimeDllPathWin();
+        auto path = Utils::getOnnxRuntimeDllPathWin(useGPU);
         mod = ::LoadLibraryA(path.c_str());
     }
     _module = mod;

@@ -12,7 +12,7 @@
 
 class OnnxRuntimeDllHandlerWin : public OnnxRuntimeDllHandler {
 public:
-    explicit OnnxRuntimeDllHandlerWin(LPCSTR dllPath);
+    explicit OnnxRuntimeDllHandlerWin(LPCSTR dllPath, bool useGPU);
     ~OnnxRuntimeDllHandlerWin() override {
         if (_module) FreeLibrary(_module);
     }
