@@ -21,15 +21,17 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
     try {
         std::string tensorflowDllPath = Utils::getTensorflowDllPathWin();
         mp_tfdll = new TensorflowDllHandlerWin(tensorflowDllPath.c_str());
-    } catch (std::runtime_error& e) {
-        mp_modelicaUtilityHelper->ModelicaError("Unable to detect tensorflow path");
+    } catch (const std::exception& ex) {
+        auto msg = std::string("SMArtInt: Failed to load tensorflowlite_c.dll: ") + ex.what() + "\n";
+        mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
 #else
     try {
         std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux();
         mp_tfdll = new TensorflowDllHandlerLinux(tensorflowDllPath.c_str());
-    } catch (std::runtime_error& e) {
-        mp_modelicaUtilityHelper->ModelicaError("Unable to detect tensorflow path");
+    } catch (const std::exception& ex) {
+        auto msg = std::string("SMArtInt: Failed to load tensorflowlite_c.so: ") + ex.what() + "\n";
+        mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
 #endif
 
