@@ -13,12 +13,17 @@
 OnnxNeuralNet::OnnxNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, const char *onnxModelPath,
                              unsigned int dymInputDim, unsigned int *p_dymInputSizes, unsigned int dymOutputDim,
                              unsigned int *p_dymOutputSizes, bool stateful, double fixInterval,
-                             int nThreads) : NeuralNet(
+                             int nThreads,  bool useGpu, int gpuDevice, int executionMode) : NeuralNet(
         p_modelicaUtilityHelper, onnxModelPath,
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
         stateful, fixInterval, nThreads) {
 
     mp_timeStepMngmt = new InputManagementONNX(stateful, fixInterval, m_nInputEntries);
+
+    // define some settings
+    m_useGPU = useGpu;
+    m_gpuDeviceId = gpuDevice;
+    m_executionMode = (executionMode==1) ? ExecutionMode::ORT_SEQUENTIAL : ExecutionMode::ORT_PARALLEL;
 
     // perform steps to create model
     OnnxNeuralNet::loadAndInit(onnxModelPath);

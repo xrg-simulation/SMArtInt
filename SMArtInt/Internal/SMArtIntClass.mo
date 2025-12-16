@@ -13,6 +13,9 @@ class SMArtIntClass
     input Boolean stateful=false;
     input Real fixEvalStep=0;
     input Integer numberOfThreads;
+    input Boolean useGPU;
+    input Integer gpuDevice;
+    input Integer executionMode;
     output SMArtIntClass smartint;
   external "C" smartint = NeuralNet_createObject(
         modelicaUtilityHelper,
@@ -23,7 +26,10 @@ class SMArtIntClass
         outputSizes,
         stateful,
         fixEvalStep,
-        numberOfThreads) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+        numberOfThreads,
+        useGPU,
+        gpuDevice,
+        executionMode) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor

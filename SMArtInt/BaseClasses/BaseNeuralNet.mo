@@ -16,6 +16,13 @@ partial model BaseNeuralNet
 
   parameter Integer numberOfThreads=1 "Number of threads used for inference (0: Number of CPU cores)" annotation (Dialog(group="Performance", tab="Advanced"));
 
+  parameter Boolean useGPU=false "Activate to use a compatible CUDA GPU for inference" annotation (Dialog(group="ONNX", tab="Advanced"));
+  parameter Integer gpuDeviceID=0 "CUDA device ID" annotation (Dialog(
+      group="ONNX",
+      tab="Advanced",
+      enable=useGPU));
+  parameter SMArtInt.BaseClasses.Types.ExecutionMode executionMode=SMArtInt.BaseClasses.Types.ExecutionMode.Sequential "Execution mode for run inference" annotation (Dialog(group="ONNX", tab="Advanced"));
+
 protected
   final parameter SMArtInt.Internal.ModelicaUtilityHelper modelicaUtilityHelper=SMArtInt.Internal.ModelicaUtilityHelper();
 
@@ -28,7 +35,10 @@ protected
       outputSizes,
       stateful,
       samplePeriod,
-      numberOfThreads);
+      numberOfThreads,
+      useGPU,
+      gpuDeviceID,
+      Integer(executionMode));
 
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={Rectangle(
