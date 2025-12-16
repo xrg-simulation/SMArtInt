@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <variant>
 
-void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep, int nThreads)
+void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep, int nThreads, bool useGpu, int gpuDevice, int executionMode)
 {
 	auto* p_modelicaUtilityHelper = (ModelicaUtilityHelper*)modelicaUtilityHelper;
 	#ifndef NDEBUG
@@ -34,7 +34,7 @@ void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath,
                 // to be added later!
                 auto *p_neuralNet = new OnnxNeuralNet(p_modelicaUtilityHelper, ModelPath, dymInputDim,
                                                        p_dymInputSizes, dymOutputDim, p_dymOutputSizes, stateful,
-                                                       fixStep, nThreads);
+                                                       fixStep, nThreads, useGpu, gpuDevice, executionMode);
                 return (void *) p_neuralNet;
             } else {
                 std::string message = Utils::string_format("SMArtInt: No known model type recognized  - at path: %s\n",

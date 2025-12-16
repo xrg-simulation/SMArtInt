@@ -88,14 +88,12 @@ std::string Utils::getTensorflowDllPathWin() {
                           GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
                           (LPCSTR) &NeuralNet_createObject, &hm) == 0)
     {
-        int ret = GetLastError();
         std::string message = Utils::string_format("SMArtInt: Unable to locate tensorflow dll");
         //mp_modelicaUtilityHelper->ModelicaError(message.c_str());
         throw std::runtime_error(message);
     }
     if (GetModuleFileName(hm, path, sizeof(path)) == 0)
     {
-        int ret = GetLastError();
         std::string message = Utils::string_format("SMArtInt: Unable to locate tensorflow dll");
         throw std::runtime_error(message);
     }
@@ -107,6 +105,39 @@ std::string Utils::getTensorflowDllPathWin() {
     }
     // Build the new path for tensorflow_c.dll
     return folderPath + "tensorflowlite_c.dll";
+}
+
+std::string Utils::getOnnxRuntimeDllPathWin(bool useGPU) {
+    char path[MAX_PATH];
+    HMODULE hm = NULL;
+
+    if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                          (LPCSTR) &NeuralNet_createObject, &hm) == 0)
+    {
+        std::string message = Utils::string_format("SMArtInt: Unable to locate onnxruntime dll");
+        throw std::runtime_error(message);
+    }
+    if (GetModuleFileName(hm, path, sizeof(path)) == 0)
+    {
+        std::string message = Utils::string_format("SMArtInt: Unable to locate onnxruntime dll");
+        throw std::runtime_error(message);
+    }
+
+    std::string folderPath(path);
+    size_t lastSlash = folderPath.find_last_of("\\/");
+    if (lastSlash != std::string::npos) {
+        folderPath = folderPath.substr(0, lastSlash + 1);
+    }
+
+    // Build the new path depending on useGPU flag
+    // GPU: default onnxruntime_c.dll (with CUDA provider available)
+    // CPU: CPU-optimized DLL name
+    if (useGPU) {
+        return folderPath + "onnxruntime_c.dll";
+    } else {
+        return folderPath + "onnxruntime_c_cpu.dll";
+    }
 }
 #else
 std::string Utils::getTensorflowDllPathLinux() {
@@ -157,6 +188,54 @@ std::string Utils::getTensorflowDllPathLinux() {
     }
     // Build the new path for tensorflow_c.so
     return folderPath + "libtensorflowlite_c.so";
+}
+
+std::string Utils::getOnnxRuntimeDllPathLinux(bool useGPU) {
+    Dl_info dl_info;
+
+    if (dladdr((void*) &NeuralNet_createObject, &dl_info) == 0) {
+        std::string message = "SMArtInt: Unable to locate onnxruntime shared library";
+        throw std::runtime_error(message);
+    }
+
+    struct stat sb;
+    if (lstat(dl_info.dli_fname, &sb) == -1) {
+        std::string error_message = "lstat failed for: ";
+        error_message += dl_info.dli_fname;
+        error_message += " - Error: ";
+        error_message += strerror(errno);
+        throw std::runtime_error(error_message);
+    }
+
+    char path[PATH_MAX];
+    ssize_t count;
+    if (!S_ISLNK(sb.st_mode)) {
+        strncpy(path, dl_info.dli_fname, PATH_MAX - 1);
+        path[PATH_MAX - 1] = '\0';
+        count = strlen(path);
+    } else {
+        count = readlink(dl_info.dli_fname, path, PATH_MAX - 1);
+        if (count == -1) {
+            std::string error_message = "Failed to readlink for: ";
+            error_message += dl_info.dli_fname;
+            error_message += " - Error: ";
+            error_message += strerror(errno);
+            throw std::runtime_error(error_message);
+        }
+        path[count] = '\0';
+    }
+
+    std::string folderPath(path, count);
+    size_t lastSlash = folderPath.find_last_of("\\/");
+    if (lastSlash != std::string::npos) {
+        folderPath = folderPath.substr(0, lastSlash + 1);
+    }
+    // Select SO based on GPU usage
+    if (useGPU) {
+        return folderPath + "libonnxruntime_c.so";
+    } else {
+        return folderPath + "libonnxruntime_c_cpu.so";
+    }
 }
 
 #ifdef _WIN32

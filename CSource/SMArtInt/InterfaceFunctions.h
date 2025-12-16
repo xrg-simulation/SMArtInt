@@ -23,7 +23,7 @@ extern "C" {
 
 	EXPORT void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim,
 		unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful,
-		double fixStep, int nThreads);
+		double fixStep, int nThreads, bool useGpu, int gpuDevice, int executionMode);
 
 	EXPORT void NeuralNet_destroyObject(void* externalObject);
 
