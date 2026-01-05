@@ -1,6 +1,7 @@
 within SMArtInt.Blocks;
 model EvaluateRecurrentNeuralNet_Batched
-  extends BaseClasses.BaseRecurrentNeuralNet_Batched(runInterferenceHistory(flatteningMethod=SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod.OldFirstTimeSeq));
+  extends BaseClasses.BaseRecurrentNeuralNet_Batched(runInterferenceHistory(flatteningMethod=SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod.OldFIrstInputSeq)
+                                                                                                                                                                       );
   Modelica.Blocks.Interfaces.RealInput u[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}), iconTransformation(extent={{-110,-10},{-90,10}})));
   Modelica.Blocks.Interfaces.RealOutput y[batchSize,numberOfOutputs] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
 equation
