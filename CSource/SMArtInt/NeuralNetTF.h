@@ -2,10 +2,12 @@
 // Created by TimHanke on 08.10.2024.
 //
 
-#include "NeuralNet.h"
-
 #ifndef SMARTIINT_NEURALNETTF_H
 #define SMARTIINT_NEURALNETTF_H
+
+#include "NeuralNet.h"
+#include "tensorflow/lite/c/c_api.h"
+#include "tensorflow/lite/core/interpreter.h"
 
 class TfLiteNeuralNet :public NeuralNet
 {
@@ -33,6 +35,8 @@ private:
 
     TfLiteModel* mp_model = nullptr; // pointer to model
     TfLiteInterpreterOptions* mp_options = nullptr; // pointer to model options
+
+    tflite::Interpreter::TfLiteDelegatePtr mp_delegate; // pointer to tflite flex ops delegate
     TfLiteInterpreter* mp_interpreter = nullptr; // pointer to interpreter
 
     TfLiteTensor* mp_flatInputTensor = nullptr; // pointer to flat input tensors from nn

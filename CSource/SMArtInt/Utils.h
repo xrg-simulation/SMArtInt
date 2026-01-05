@@ -29,12 +29,12 @@ namespace Utils {
 
     // methods to retreive dlls
 #ifdef _WIN32
-    std::string getTensorflowDllPathWin();
+    std::string getTensorflowDllPathWin(bool flexDelegate=false);
     // Select ONNX Runtime DLL depending on GPU usage
     // When useGPU is false, prefer CPU-optimized DLL name
     std::string getOnnxRuntimeDllPathWin(bool useGPU);
 #else
-    std::string getTensorflowDllPathLinux();
+    std::string getTensorflowDllPathLinux(bool flexDelegate=false);
     // Select ONNX Runtime SO depending on GPU usage
     // When useGPU is false, prefer CPU-optimized SO name
     std::string getOnnxRuntimeDllPathLinux(bool useGPU);

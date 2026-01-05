@@ -80,7 +80,7 @@ void Utils::castFromFloat(double& value, void* p_store, unsigned int pos)
 }
 
 #ifdef _WIN32
-std::string Utils::getTensorflowDllPathWin() {
+std::string Utils::getTensorflowDllPathWin(bool flexDelegate) {
     char path[MAX_PATH];
     HMODULE hm = NULL;
 
@@ -102,6 +102,10 @@ std::string Utils::getTensorflowDllPathWin() {
     size_t lastSlash = folderPath.find_last_of("\\/");
     if (lastSlash != std::string::npos) {
         folderPath = folderPath.substr(0, lastSlash + 1);
+    }
+    if (flexDelegate){
+        // Build the new path for tensorflow_flex.dll
+        return folderPath + "tensorflowlite_flex.dll";
     }
     // Build the new path for tensorflow_c.dll
     return folderPath + "tensorflowlite_c.dll";
@@ -140,7 +144,7 @@ std::string Utils::getOnnxRuntimeDllPathWin(bool useGPU) {
     }
 }
 #else
-std::string Utils::getTensorflowDllPathLinux() {
+std::string Utils::getTensorflowDllPathLinux(bool flexDelegate) {
     Dl_info dl_info;
 
     // Get the address of a symbol in the shared library
@@ -186,6 +190,12 @@ std::string Utils::getTensorflowDllPathLinux() {
     if (lastSlash != std::string::npos) {
         folderPath = folderPath.substr(0, lastSlash + 1);
     }
+
+    if (flexDelegate){
+        // Build the new path for tensorflow_flex.dll
+        return folderPath + "libtensorflowlite_flex.so";
+    }
+
     // Build the new path for tensorflow_c.so
     return folderPath + "libtensorflowlite_c.so";
 }

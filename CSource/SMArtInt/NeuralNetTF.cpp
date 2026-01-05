@@ -3,6 +3,8 @@
 //
 
 #include "NeuralNetTF.h"
+#include "tensorflow/lite/c/c_api.h"
+#include "tensorflow/lite/core/interpreter.h"
 #ifdef _WIN32
 #include "TensorflowDllHandlerWin.h"
 #else
@@ -15,7 +17,7 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
                                  int nThreads) : NeuralNet(
         p_modelicaUtilityHelper, tfLiteModelPath,
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
-        stateful, fixInterval, nThreads) {
+        stateful, fixInterval, nThreads), mp_delegate(nullptr, nullptr) {
 
 #ifdef _WIN32
     try {
@@ -25,6 +27,21 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
         auto msg = std::string("SMArtInt: Failed to load tensorflowlite_c.dll: ") + ex.what() + "\n";
         mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
+    // create the delegate for TF flex ops
+    try {
+        std::string tensorflowDllPath = Utils::getTensorflowDllPathWin(true);
+        auto hdll = LoadLibrary(tensorflowDllPath.c_str());
+        auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(GetProcAddress(hdll, "TF_AcquireFlexDelegate"));
+        if (TF_AcquireFlexDelegate == nullptr) {
+            throw std::runtime_error("TF_AcquireFlexDelegate couldn't be run");
+        }
+        mp_delegate = TF_AcquireFlexDelegate();
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate loaded successfully\n");
+    }
+    catch (std::runtime_error& e) {
+        auto msg = std::string("SMArtInt: Failed to load TF-FlexDelegate: ") + e.what() + "\n";
+        mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
+    }
 #else
     try {
         std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux();
@@ -32,6 +49,21 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
     } catch (const std::exception& ex) {
         auto msg = std::string("SMArtInt: Failed to load tensorflowlite_c.so: ") + ex.what() + "\n";
         mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
+    }
+    // create the delegate for TF flex ops
+    try {
+        std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux(true);
+        auto hdll = dlopen(tensorflowDllPath.c_str(), RTLD_LAZY); // Load the shared library
+        auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(dlsym(hdll, "TF_AcquireFlexDelegate"));
+        if (TF_AcquireFlexDelegate == nullptr) {
+            throw std::runtime_error("TF_AcquireFlexDelegate couldn't be run");
+        }
+        mp_delegate = TF_AcquireFlexDelegate();
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate loaded successfully\n");
+    }
+    catch (std::runtime_error& e) {
+        auto msg = std::string("SMArtInt: Failed to load TF-FlexDelegate: ") + e.what() + "\n";
+        mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
     }
 #endif
 
@@ -67,6 +99,15 @@ void TfLiteNeuralNet::loadAndInit(const char* tfliteModelPath)
     // thread management
     mp_options = mp_tfdll->interpreterOptionsCreate();
     mp_tfdll->interpreterOptionsSetNumThreads(mp_options, m_nThreads);
+
+    // add flex delegate if available
+    if (mp_delegate != nullptr){
+        mp_tfdll->interpreterOptionsAddDelegate(mp_options, mp_delegate.get());
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate added to Interpreter options\n");
+    }
+    else {
+        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate not added to Interpreter options\n");
+    }
 
     // Create the interpreter.
     mp_interpreter = mp_tfdll->interpreterCreate(mp_model, mp_options);
@@ -194,6 +235,8 @@ void TfLiteNeuralNet::runInferenceFlatTensor(double time, double* input, unsigne
 
         // Run inference
         if (mp_tfdll->interpreterInvoke(mp_interpreter) != kTfLiteOk) {
+            auto e = mp_tfdll->interpreterInvoke(mp_interpreter);
+            std::cout << "Error: " << e << std::endl;
             mp_modelicaUtilityHelper->ModelicaError("Inference failed");
         }
     }
