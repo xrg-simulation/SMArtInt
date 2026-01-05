@@ -1,4 +1,5 @@
 EvaluateGenericNeuralNetwork
 EvaluateSimpleFeedForwardNeuralNetwork
 EvaluateRecurrentNeuralNet
+EvaluateRecurrentNeuralNet_Batched
 EvaluateStatefulRecurrentNeuralNet

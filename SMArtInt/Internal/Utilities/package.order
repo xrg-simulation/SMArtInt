@@ -1,4 +1,5 @@
 RunInferenceFlatInput
 RunInterferenceRNN
+RunInterferenceRNN_Batched
 RunInferenceFlatInputStatefulRNN
 SubModels

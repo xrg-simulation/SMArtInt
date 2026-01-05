@@ -20,7 +20,7 @@ def generateAiPi(rnnType: RnnType, window_size=1, k=30, T=1600, tau=100):
     elif rnnType == RnnType.STATE:
         modelInput = tf.keras.Input(batch_shape=(1, 1, 1), name="FeatureInput")
     else:
-        modelInput = tf.keras.Input(shape=(window_size, 1), name="FeatureInput")
+        modelInput = tf.keras.Input(batch_shape=(None, window_size, 1), name="FeatureInput")
 
     layer = tf.keras.layers.SimpleRNN(units=2,
                                       activation='linear',
@@ -71,17 +71,18 @@ def step(height=1.0, duration=3600, start=500, tau=100, window_size=500):
 k = 30  # proportional gain
 T = 1600  # integrator time constant
 window_size = 250  # number of past elements used for non-state variant
-rnn_type = RnnType.EXTSTATE  # define type of used RNN
+rnn_type = RnnType.RNN  # define type of used RNN
 if rnn_type == RnnType.RNN:
     tau = 100  # sampling rate
 else:
     tau = 10
-testTFLiteModel = False
+testTFLiteModel = True
 ### Test data
-test_model = False
+test_model = True
 stepTime = 100
 
 # create model and test data
+rnn_type = RnnType.RNN
 model = generateAiPi(rnn_type, window_size=window_size, k=k, T=T, tau=tau)
 times, step_data, unrld_data = step(height=1, duration=3600, start=500,
                                     tau=tau, window_size=window_size)
