@@ -16,7 +16,7 @@ def generateAiPi(rnnType: RnnType, window_size=1, k=30, T=1600, tau=100):
     stateful = rnnType == RnnType.STATE
 
     if rnnType == RnnType.EXTSTATE:
-        modelInput = tf.keras.Input(shape=(1, 1), name="FeatureInput")
+        modelInput = tf.keras.Input(batch_shape=(None, 1, 1), name="FeatureInput")
     elif rnnType == RnnType.STATE:
         modelInput = tf.keras.Input(batch_shape=(1, 1, 1), name="FeatureInput")
     else:
@@ -27,9 +27,10 @@ def generateAiPi(rnnType: RnnType, window_size=1, k=30, T=1600, tau=100):
                                       use_bias=False,
                                       stateful=stateful,
                                       return_state=True,
+                                      unroll=True,
                                       name="ZPassAndIntegrate",
                                       )
-    state_input = tf.keras.Input(shape=(2,))
+    state_input = tf.keras.Input(batch_shape=(None, 2,))
     if rnnType == RnnType.EXTSTATE:
         out, state = layer(modelInput, initial_state=[state_input])
     else:
@@ -71,18 +72,17 @@ def step(height=1.0, duration=3600, start=500, tau=100, window_size=500):
 k = 30  # proportional gain
 T = 1600  # integrator time constant
 window_size = 250  # number of past elements used for non-state variant
-rnn_type = RnnType.RNN  # define type of used RNN
+rnn_type = RnnType.RNN # define type of used RNN
 if rnn_type == RnnType.RNN:
     tau = 100  # sampling rate
 else:
     tau = 10
-testTFLiteModel = True
+testTFLiteModel = False
 ### Test data
-test_model = True
+test_model = False
 stepTime = 100
 
 # create model and test data
-rnn_type = RnnType.RNN
 model = generateAiPi(rnn_type, window_size=window_size, k=k, T=T, tau=tau)
 times, step_data, unrld_data = step(height=1, duration=3600, start=500,
                                     tau=tau, window_size=window_size)
@@ -115,7 +115,20 @@ if test_model:
 if rnn_type != RnnType.STATE:
     # export the model as tflite model
 
-    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    if rnn_type == RnnType.EXTSTATE:
+        @tf.function
+        def serve_model(feature, state):
+            return model([feature, state])
+
+        concrete_func = serve_model.get_concrete_function(
+            tf.TensorSpec([None, 1, 1], model.inputs[0].dtype, name="FeatureInput"),
+            tf.TensorSpec([None, 2], model.inputs[1].dtype, name="StateInput")
+        )
+
+        converter = tf.lite.TFLiteConverter.from_concrete_functions([concrete_func], None)
+    else:
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
     converter.experimental_new_converter = True
     converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS,
@@ -135,6 +148,9 @@ if rnn_type != RnnType.STATE:
         interpreter.allocate_tensors()
         input_details = interpreter.get_input_details()
         output_details = interpreter.get_output_details()
+
+        print(f"Input 0 (Feature) Index: {input_details[0]['index']}")
+        print(f"Input 1 (State) Index: {input_details[1]['index']}")
 
         states = np.array([[0, 0]])
         results = []

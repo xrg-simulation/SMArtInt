@@ -54,17 +54,21 @@ namespace Utils {
 			}
 		};
 
-		void addStateInput(TfLiteTensor* stateInpTensor, TensorflowDllHandler* p_tfDll) {
-            auto byte_size = p_tfDll->tensorByteSize(stateInpTensor);
+		void addStateInput(TfLiteTensor* stateInpTensor, TensorflowDllHandler* p_tfDll, unsigned int batchSize = 1) {
+            auto byte_size = p_tfDll->tensorByteSize(stateInpTensor) / batchSize;
             m_stateDataByteSizes.push_back(byte_size);
 			m_stateStorage.push_back(operator new(byte_size));
 		}
 
-        void addStateInput(Ort::Value* stateInpTensor) {
-            m_stateDataByteSizes.push_back(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * \
-                sizeof(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType()));
-            m_stateStorage.push_back(operator new(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * \
-                sizeof(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType())));
+        void addStateInput(Ort::Value* stateInpTensor, unsigned int batchSize = 1) {
+            auto elementSize = (stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) ? sizeof(float) : 0; // Currently only floats supported
+            if (elementSize == 0) throw std::invalid_argument("Unsupported tensor type in StateInputsContainer::addStateInput");
+
+            size_t totalByteSize = stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * elementSize;
+            size_t perBatchByteSize = totalByteSize / batchSize;
+
+            m_stateDataByteSizes.push_back(perBatchByteSize);
+            m_stateStorage.push_back(operator new(perBatchByteSize));
         }
 
 		void* at(unsigned int i) {

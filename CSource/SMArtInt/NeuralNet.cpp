@@ -59,10 +59,6 @@ NeuralNet::NeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char*
     namespace fs = std::filesystem;
     fs::path file_path(ModelPath);
     std::string extension = file_path.extension().string();
-    if (stateful && mp_inputSizes[0] != 1 && extension == ".onnx"){
-        mp_modelicaUtilityHelper->ModelicaError("Stateful RNNs with batched inputs are not supported for onnx at the moment, "
-                                                "but will be available in the future.");
-    }
 
 	// create the time step management object
     if (stateful && fixInterval <= 0) {

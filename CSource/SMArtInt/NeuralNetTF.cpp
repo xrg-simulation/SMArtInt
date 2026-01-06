@@ -67,7 +67,7 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
     }
 #endif
 
-    mp_timeStepMngmt = new InputManagementTF(stateful, fixInterval, m_nInputEntries, mp_tfdll);
+    mp_timeStepMngmt = new InputManagementTF(stateful, fixInterval, m_nInputEntries, mp_tfdll, mp_inputSizes[0]);
 
     // perform steps to create model
     TfLiteNeuralNet::loadAndInit(tfLiteModelPath);
@@ -115,9 +115,31 @@ void TfLiteNeuralNet::loadAndInit(const char* tfliteModelPath)
         mp_modelicaUtilityHelper->ModelicaError("Failed to create interpreter");
     }
 
+    // Adjust first dimension (batch size) for ALL input tensors before allocation.
+    // This is crucial for stateful RNNs where state inputs must match the batch size.
+    int nInputs = mp_tfdll->interpreterGetInputTensorCount(mp_interpreter);
+    for (int i = 0; i < nInputs; ++i) {
+        TfLiteTensor* tensor = mp_tfdll->interpreterGetInputTensor(mp_interpreter, i);
+        if (mp_tfdll->tensorDim(tensor, 0) != int(mp_inputSizes[0])) {
+            std::string message = Utils::string_format("SMArtInt: Adjust first dimension of input %i from %i to batch size %i\n",
+                                                       i, mp_tfdll->tensorDim(tensor, 0), mp_inputSizes[0]);
+            mp_modelicaUtilityHelper->ModelicaMessage(message.c_str());
+
+            int numDims = mp_tfdll->tensorNumDims(tensor);
+            auto* dims = new int[numDims];
+            dims[0] = int(mp_inputSizes[0]);
+            for (int j = 1; j < numDims; ++j) {
+                dims[j] = mp_tfdll->tensorDim(tensor, j);
+            }
+            mp_tfdll->interpreterResizeInputTensor(mp_interpreter, i, dims, numDims);
+            delete[] dims;
+        }
+    }
+
     // Allocate tensor buffers.
     if (mp_tfdll->interpreterAllocateTensors(mp_interpreter) != kTfLiteOk)
         mp_modelicaUtilityHelper->ModelicaError("Failed to allocate tensors!");
+
     // Find input tensors.
     if (mp_tfdll->interpreterGetInputTensorCount(mp_interpreter) != 1 && !mp_timeStepMngmt->isActive())
         mp_modelicaUtilityHelper->ModelicaError("SMArtInt can only handle models with single input");
@@ -131,28 +153,6 @@ void TfLiteNeuralNet::loadAndInit(const char* tfliteModelPath)
 
     // check dimensions - function throws error if not matching
     checkInputTensorSize();
-
-    // adjust first dimension which is batch size
-    if (mp_tfdll->tensorDim(mp_flatInputTensor, 0) != int(mp_inputSizes[0])) {
-
-        std::string message = "SMArtInt: Adjust first dimension from " +
-                              Utils::string_format("%i", mp_tfdll->tensorDim(mp_flatInputTensor, 0)) +
-                              " to batch size " + Utils::string_format("%i\n", mp_inputSizes[0]);
-        mp_modelicaUtilityHelper->ModelicaMessage(message.c_str());
-
-        int* p_dymInputSizes;
-        p_dymInputSizes = new int[m_inputDim];
-        for (unsigned int i = 0; i < m_inputDim; ++i) {
-            p_dymInputSizes[i] = int(mp_inputSizes[i]);
-        }
-        mp_tfdll->interpreterResizeInputTensor(mp_interpreter, 0, p_dymInputSizes,
-                                               m_inputDim);
-
-        // Reallocate tensor buffers for updated sizes
-        if (mp_tfdll->interpreterAllocateTensors(mp_interpreter) != kTfLiteOk) {
-            mp_modelicaUtilityHelper->ModelicaError("Failed to allocate tensors!");
-        }
-    }
 
     // check the number of outputs
     if (mp_tfdll->interpreterGetOutputTensorCount(mp_interpreter) != 1) {
@@ -205,7 +205,7 @@ void TfLiteNeuralNet::runInferenceFlatTensor(double time, double* input, unsigne
                                                    m_nOutputEntries, outputLength);
         mp_modelicaUtilityHelper->ModelicaError(message.c_str());
     }
-    if (m_firstInvoke & !m_statesInitialized) {
+    if (mp_timeStepMngmt->isActive() && m_firstInvoke && !m_statesInitialized) {
         // Initialize states if available
         mp_timeStepMngmt->InputManagement::initialize(time);
         m_statesInitialized = true;

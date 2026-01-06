@@ -23,7 +23,7 @@ OnnxNeuralNet::OnnxNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, con
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
         stateful, fixInterval, nThreads) {
 
-    mp_timeStepMngmt = new InputManagementONNX(stateful, fixInterval, m_nInputEntries);
+    mp_timeStepMngmt = new InputManagementONNX(stateful, fixInterval, m_nInputEntries, mp_inputSizes[0]);
 
     // define some settings
     m_useGPU = useGpu;
@@ -37,11 +37,11 @@ OnnxNeuralNet::OnnxNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, con
 OnnxNeuralNet::~OnnxNeuralNet() {
     //mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Destructor ONNX Neural Network\n");
     // clean up allocated onnx stuff - Correct way?
-    delete(mp_session);
-    delete(mp_binding);
-    //delete(mp_model);
-    delete(input_data);
-    delete(tensorData);
+    // delete(mp_session);
+    // delete(mp_binding);
+    // delete(mp_model);
+    // delete(input_data);
+    // delete(tensorData);
     //clean up time step manager
     delete mp_timeStepMngmt;
 }
@@ -201,7 +201,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 
     // ToDo Adjusting Batchsize for stateful models: every input and output (state in- and outputs) needed to be adjusted with an batchsize
     if (m_input_shapes[0] != mp_inputSizes[0]){
-        std::string message = "SMArtInt: Adjust first dimension from " + Utils::string_format("%i", m_input_shapes[0]) + " to batch size " + Utils::string_format("%i\n", mp_inputSizes[0]);
+        std::string message = "SMArtInt: Adjust first dimension of primary input from " + Utils::string_format("%i", m_input_shapes[0]) + " to batch size " + Utils::string_format("%i\n", mp_inputSizes[0]);
         mp_modelicaUtilityHelper->ModelicaMessage(message.c_str());
 
         m_input_shapes[0] = mp_inputSizes[0]; //1
@@ -277,7 +277,13 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
             try {
                 std::vector<int64_t> input_shape;
                 input_shape = mp_session->GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape();
-                input_shape[0] = (input_shape[0] == -1) ? 1 : input_shape[0];
+                
+                // Adjust batch size if it's dynamic (-1) or if it doesn't match the desired batch size
+                if (input_shape[0] == -1 || input_shape[0] != mp_inputSizes[0]) {
+                    std::string message = "SMArtInt: Adjusting first dimension of state input " + std::to_string(i) + " from " + std::to_string(input_shape[0]) + " to batch size " + std::to_string(mp_inputSizes[0]) + "\n";
+                    mp_modelicaUtilityHelper->ModelicaMessage(message.c_str());
+                    input_shape[0] = mp_inputSizes[0];
+                }
 
                 size_t totalSize = 1;
                 for (int64_t dim : input_shape) {
@@ -328,7 +334,7 @@ void OnnxNeuralNet::runInferenceFlatTensor(double time, double* input, unsigned 
         mp_modelicaUtilityHelper->ModelicaError(message.c_str());
     }
 
-    if (m_firstInvoke & !m_statesInitialized) {
+    if (mp_timeStepMngmt->isActive() && m_firstInvoke && !m_statesInitialized) {
         // Initialize states if available
         mp_timeStepMngmt->InputManagement::initialize(time);
         m_statesInitialized = true;

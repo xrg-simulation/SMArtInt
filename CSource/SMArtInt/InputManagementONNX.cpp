@@ -4,8 +4,8 @@
 
 #include "InputManagementONNX.h"
 
-InputManagementONNX::InputManagementONNX(bool stateful, double fixInterval, unsigned int nInputEntries) :
-InputManagement(stateful, fixInterval, nInputEntries){
+InputManagementONNX::InputManagementONNX(bool stateful, double fixInterval, unsigned int nInputEntries, unsigned int batchSize) :
+InputManagement(stateful, fixInterval, nInputEntries, batchSize){
 }
 
 void InputManagementONNX::addStateOut(Ort::Value* stateOutTensor)
@@ -76,10 +76,13 @@ double* InputManagementONNX::handleInpts(double time, unsigned int iStep, double
             // previously an empty entry is created in the state buffer - this point here will be called multiple times
             // when iterating the current step: in order to use the value of the previous accepted step we will create
             // the empty entry first and use the previous value
-            Utils::StateInputsContainer* stateInputs = m_stateBuffer.getPrevValue();
-            for (unsigned int i = 0; i < m_nStateArr; ++i) {
-                std::memcpy(mp_OnnxStateInpTensors[i]->GetTensorMutableRawData(), stateInputs->at(i),
-                            stateInputs->byteSizeAt(i));
+            for (unsigned int b = 0; b < m_batchSize; ++b) {
+                Utils::StateInputsContainer* stateInputs = m_stateBuffers[b].getPrevValue();
+                for (unsigned int i = 0; i < m_nStateArr; ++i) {
+                    size_t stateSize = stateInputs->byteSizeAt(i);
+                    std::memcpy(reinterpret_cast<char*>(mp_OnnxStateInpTensors[i]->GetTensorMutableRawData()) + b * stateSize,
+                                stateInputs->at(i), stateSize);
+                }
             }
         }
         else {
@@ -111,53 +114,53 @@ bool InputManagementONNX::addStateInp(Ort::Value* stateInpTensor)
 
 bool InputManagementONNX::updateFinishedStep(unsigned int nSteps)
 {
-    if (nSteps > 0) {
-        const auto test = new Utils::StateInputsContainer();
-        for (unsigned int i = 0; i < m_nStateArr; ++i) {
-                test->addStateInput(mp_OnnxStateInpTensors[i]);
-                std::memcpy(test->at(i), mp_OnnxStateOutTensors[i]->GetTensorMutableRawData(),
-                            test->byteSizeAt(i));
+    if (m_active && nSteps > 0) {
+        for (unsigned int b = 0; b < m_batchSize; ++b) {
+            const auto test = new Utils::StateInputsContainer();
+            for (unsigned int i = 0; i < m_nStateArr; ++i) {
+                test->addStateInput(mp_OnnxStateInpTensors[i], m_batchSize);
+                size_t stateSize = test->byteSizeAt(i);
+                std::memcpy(test->at(i), reinterpret_cast<char*>(mp_OnnxStateOutTensors[i]->GetTensorMutableRawData()) + b * stateSize,
+                            stateSize);
+            }
+            m_stateBuffers[b].store(m_currentGridTime, test);
         }
-        m_stateBuffer.store(m_currentGridTime, test);
     }
     return true;
 }
 
 void InputManagementONNX::initialize(double time, double* p_stateValues, const unsigned int &nStateValues)
 {
-    unsigned int counter = 0;
-    const auto test =  new Utils::StateInputsContainer();
-    for (unsigned int iInput = 0; iInput < m_nStateArr; ++iInput) {
-        // the initialization will be done with m_currIdx = 0 and m_prvIdx = m_nStoredSteps - 1
-        // therefore we store the data in the last available index
+    if (!m_active) return;
 
-        if (nStateValues != m_nStateValues) {
-            throw std::invalid_argument(Utils::string_format(
-                    "SMArtInt needs to initialize %i but %i are given", m_nStateValues, nStateValues));
-        }
-
-        void (*castFunc)(const double &, void *, unsigned int);
-
-        switch (mp_OnnxStateInpTensors[iInput]->GetTensorTypeAndShapeInfo().GetElementType()) {
-            case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
-                castFunc = &Utils::castToFloat;
-                break;
-            default:
-                throw std::invalid_argument(
-                        "Could not convert state data - SMArtInt currently only supports ONNX models using floats)!");
-        }
-
-        test->addStateInput(mp_OnnxStateInpTensors[iInput]);
-
-        void *p_data = test->at(iInput);
-
-        unsigned int n = mp_OnnxStateInpTensors[iInput]->GetTensorTypeAndShapeInfo().GetElementCount();
-
-        for (unsigned int i = 0; i < n; ++i) {
-            castFunc(0.0, p_data, i);
-        }
-        counter += 1;
+    if (nStateValues != m_nStateValues) {
+        throw std::invalid_argument(Utils::string_format(
+                "SMArtInt needs to initialize %i but %i are given", m_nStateValues, nStateValues));
     }
-//m_stateBuffer.store(time, test);
-    m_stateBuffer.initialize(test);
+
+    unsigned int counter = 0;
+    for (unsigned int b = 0; b < m_batchSize; ++b) {
+        const auto test = new Utils::StateInputsContainer();
+        for (unsigned int iInput = 0; iInput < m_nStateArr; ++iInput) {
+            void (*castFunc)(const double &, void *, unsigned int);
+
+            switch (mp_OnnxStateInpTensors[iInput]->GetTensorTypeAndShapeInfo().GetElementType()) {
+                case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
+                    castFunc = &Utils::castToFloat;
+                    break;
+                default:
+                    throw std::invalid_argument(
+                            "Could not convert state data - SMArtInt currently only supports ONNX models using floats)!");
+            }
+
+            test->addStateInput(mp_OnnxStateInpTensors[iInput], m_batchSize);
+            void *p_data = test->at(iInput);
+            unsigned int n = mp_OnnxStateInpTensors[iInput]->GetTensorTypeAndShapeInfo().GetElementCount() / m_batchSize;
+
+            for (unsigned int i = 0; i < n; ++i) {
+                castFunc(p_stateValues[counter++], p_data, i);
+            }
+        }
+        m_stateBuffers[b].initialize(test);
+    }
 }
