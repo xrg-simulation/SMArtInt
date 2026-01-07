@@ -16,6 +16,7 @@ class SMArtIntClass
     input Boolean useGPU;
     input Integer gpuDevice;
     input Integer executionMode;
+    input Boolean useFlexOps;
     output SMArtIntClass smartint;
   external "C" smartint = NeuralNet_createObject(
       modelicaUtilityHelper,
@@ -29,7 +30,8 @@ class SMArtIntClass
       numberOfThreads,
       useGPU,
       gpuDevice,
-      executionMode) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+      executionMode,
+      useFlexOps) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor

@@ -16,6 +16,8 @@ partial model BaseNeuralNet
 
   parameter Integer numberOfThreads=1 "Number of threads used for inference (0: Number of CPU cores)" annotation (Dialog(group="Performance", tab="Advanced"));
 
+  parameter Boolean useFlexOps=false "Activate to allow Tensorflow Flex Ops for tflite models" annotation (Dialog(group="TFLite", tab="Advanced"));
+
   parameter Boolean useGPU=false "Activate to use a compatible CUDA GPU for inference" annotation (Dialog(group="ONNX", tab="Advanced"));
   parameter Integer gpuDeviceID=0 "CUDA device ID" annotation (Dialog(
       group="ONNX",
@@ -38,8 +40,12 @@ protected
       numberOfThreads,
       useGPU,
       gpuDeviceID,
-      Integer(executionMode));
+      Integer(executionMode),
+      useFlexOps);
 
+public
+  Internal.Utilities.Dependencies.OnnxGpuDependencies onnxGpuDependencies if useGPU annotation (Placement(transformation(extent={{60,-100},{80,-80}})));
+  Internal.Utilities.Dependencies.TFFlexOpsDependencies tFFlexOpsDependencies if useFlexOps annotation (Placement(transformation(extent={{20,-100},{40,-80}})));
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false), graphics={Rectangle(
           extent={{-100,100},{100,-100}},

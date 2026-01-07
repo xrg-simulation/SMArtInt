@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <variant>
 
-void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep, int nThreads, bool useGpu, int gpuDevice, int executionMode)
+void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath, unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim, unsigned int* p_dymOutputSizes, bool stateful, double fixStep, int nThreads, bool useGpu, int gpuDevice, int executionMode, bool useFlexOps)
 {
 	auto* p_modelicaUtilityHelper = (ModelicaUtilityHelper*)modelicaUtilityHelper;
 	#ifndef NDEBUG
@@ -24,7 +24,7 @@ void* NeuralNet_createObject(void* modelicaUtilityHelper, const char* ModelPath,
                 // create TfLiteNeuralNet pointer
                 auto *p_neuralNet = new TfLiteNeuralNet(p_modelicaUtilityHelper, ModelPath,
                                                                    dymInputDim, p_dymInputSizes, dymOutputDim,
-                                                                   p_dymOutputSizes, stateful, fixStep, nThreads);
+                                                                   p_dymOutputSizes, stateful, fixStep, nThreads, useFlexOps);
                 return (void *) p_neuralNet;
 
             } else if (extension == ".onnx") {
@@ -97,4 +97,6 @@ void NeuralNet_initializeStates(void* externalObject, double time,  double* stat
     }
 }
 
+void Deps_Dummy() {
 
+}

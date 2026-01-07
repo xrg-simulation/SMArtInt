@@ -14,7 +14,7 @@
 TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, const char *tfLiteModelPath,
                                  unsigned int dymInputDim, unsigned int *p_dymInputSizes, unsigned int dymOutputDim,
                                  unsigned int *p_dymOutputSizes, bool stateful, double fixInterval,
-                                 int nThreads) : NeuralNet(
+                                 int nThreads, bool useFlexOps) : NeuralNet(
         p_modelicaUtilityHelper, tfLiteModelPath,
         dymInputDim, p_dymInputSizes, dymOutputDim, p_dymOutputSizes,
         stateful, fixInterval, nThreads), mp_delegate(nullptr, nullptr) {
@@ -28,19 +28,21 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
         mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
     // create the delegate for TF flex ops
-    try {
-        std::string tensorflowDllPath = Utils::getTensorflowDllPathWin(true);
-        auto hdll = LoadLibrary(tensorflowDllPath.c_str());
-        auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(GetProcAddress(hdll, "TF_AcquireFlexDelegate"));
-        if (TF_AcquireFlexDelegate == nullptr) {
-            throw std::runtime_error("TF_AcquireFlexDelegate couldn't be run");
+    if (useFlexOps){
+        try {
+            std::string tensorflowDllPath = Utils::getTensorflowDllPathWin(true);
+            auto hdll = LoadLibrary(tensorflowDllPath.c_str());
+            auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(GetProcAddress(hdll, "TF_AcquireFlexDelegate"));
+            if (TF_AcquireFlexDelegate == nullptr) {
+                throw std::runtime_error("TF_AcquireFlexDelegate couldn't be run");
+            }
+            mp_delegate = TF_AcquireFlexDelegate();
+            mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate loaded successfully\n");
         }
-        mp_delegate = TF_AcquireFlexDelegate();
-        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate loaded successfully\n");
-    }
-    catch (std::runtime_error& e) {
-        auto msg = std::string("SMArtInt: Failed to load TF-FlexDelegate: ") + e.what() + "\n";
-        mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
+        catch (std::runtime_error& e) {
+            auto msg = std::string("SMArtInt: Failed to load TF-FlexDelegate: ") + e.what() + "\n";
+            mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
+        }
     }
 #else
     try {
@@ -51,19 +53,21 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
         mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
     }
     // create the delegate for TF flex ops
-    try {
-        std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux(true);
-        auto hdll = dlopen(tensorflowDllPath.c_str(), RTLD_LAZY); // Load the shared library
-        auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(dlsym(hdll, "TF_AcquireFlexDelegate"));
-        if (TF_AcquireFlexDelegate == nullptr) {
-            throw std::runtime_error("TF_AcquireFlexDelegate couldn't be run");
+    if (useFlexOps) {
+        try {
+            std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux(true);
+            auto hdll = dlopen(tensorflowDllPath.c_str(), RTLD_LAZY); // Load the shared library
+            auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(dlsym(hdll, "TF_AcquireFlexDelegate"));
+            if (TF_AcquireFlexDelegate == nullptr) {
+                throw std::runtime_error("TF_AcquireFlexDelegate couldn't be run");
+            }
+            mp_delegate = TF_AcquireFlexDelegate();
+            mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate loaded successfully\n");
         }
-        mp_delegate = TF_AcquireFlexDelegate();
-        mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: TF-FlexDelegate loaded successfully\n");
-    }
-    catch (std::runtime_error& e) {
-        auto msg = std::string("SMArtInt: Failed to load TF-FlexDelegate: ") + e.what() + "\n";
-        mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
+        catch (std::runtime_error& e) {
+            auto msg = std::string("SMArtInt: Failed to load TF-FlexDelegate: ") + e.what() + "\n";
+            mp_modelicaUtilityHelper->ModelicaMessage(msg.c_str());
+        }
     }
 #endif
 
