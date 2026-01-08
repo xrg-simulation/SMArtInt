@@ -9,34 +9,48 @@ model RunInterferenceRNN
 
   parameter Boolean continuous=false;
   parameter Boolean useClaRaDelay=true "Switch between available delay types: Clara and MSL";
-  parameter SubModels.RNNFlatteningMethod flatteningMethod=SubModels.RNNFlatteningMethod.OldFIrstInputSeq;
+  parameter SubModels.RNNFlatteningMethod flatteningMethod=SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod.OldFIrstInputSeq;
   parameter Boolean returnSequences=false;
+
+  parameter Integer batchSize=1;
 
   // instance of SMArtInt class
   parameter Internal.SMArtIntClass smartint;
 
-  Modelica.Blocks.Interfaces.RealInput u[nInputs] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y_flat[nOutputs] annotation (Placement(transformation(extent={{78,-20},{118,20}})));
-  SubModels.RNNFlattenInput flattenedHistory(
-    useClaRaDelay=useClaRaDelay,
-    nInputs=nInputs,
-    samplePeriod=samplePeriod,
-    nHistoricElements=nHistoricElements,
-    continuous=continuous,
-    flatteningMethod=flatteningMethod,
-    u=u) annotation (Placement(transformation(extent={{-10,20},{10,40}})));
+  Real y_flat[batchSize*nOutputs];
+
+  // final flat tensor for the AI model (Batch * Window * Features)
+  Real[batchSize * nHistoricElements * nInputs] finalFlatTensor;
+
+  Modelica.Blocks.Interfaces.RealInput u[batchSize,nInputs] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[batchSize, nOutputs] annotation (Placement(transformation(extent={{78,-20},{118,20}})));
+  SubModels.RNNFlattenInput flattenedHistory[batchSize](
+    each useClaRaDelay=useClaRaDelay,
+    each nInputs=nInputs,
+    each samplePeriod=samplePeriod,
+    each nHistoricElements=nHistoricElements,
+    each continuous=continuous,
+    each flatteningMethod=flatteningMethod) annotation (Placement(transformation(extent={{-10,20},{10,40}})));
 
   SubModels.RNNDeflattenOutput unflattenOutput(nOutputs=nOutputs, nHistoricElements=nHistoricElements) if returnSequences annotation (Placement(transformation(extent={{-10,-40},{10,-20}})));
 equation
   y_flat[:] = InterfaceFunctions.runInferenceFlatTensor(
     smartint,
     time,
-    flattenedHistory.inputFlattenTensor,
-    nOutputs);
+    finalFlatTensor,
+    nOutputs*batchSize);
+
+  for i in 1:batchSize loop
+    flattenedHistory[i].u = u[i, :];
+    finalFlatTensor[(i-1)*(nHistoricElements*nInputs) + 1 : i*(nHistoricElements*nInputs)] = flattenedHistory[i].inputFlattenTensor;
+    for j in 1:nOutputs loop
+      y_flat[(i - 1)*nOutputs + j] = y[i, j];
+    end for;
+  end for;
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={Rectangle(
           extent={{-100,100},{100,-100}},
           pattern=LinePattern.None,
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid),Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
+          fillPattern=FillPattern.Solid), Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
 end RunInterferenceRNN;

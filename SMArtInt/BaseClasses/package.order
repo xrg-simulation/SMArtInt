@@ -3,5 +3,4 @@ BaseNeuralNet
 BaseGenericNeuralNet
 BaseFeedForwardNeuralNet
 BaseRecurrentNeuralNet
-BaseRecurrentNeuralNet_Batched
 BaseStatefulRecurrentNeuralNet
