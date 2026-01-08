@@ -5,8 +5,8 @@ model RunInferenceFlatInput
 
   parameter SMArtIntClass smartint;
 
-  Modelica.Blocks.Interfaces.RealInput u[nTotalInputsElements] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y[nTotalOutputElements] annotation (Placement(transformation(extent={{80,-20},{120,20}})));
+  Modelica.Blocks.Interfaces.RealInput u[nTotalInputsElements] annotation (Placement(transformation(extent={{-120,-20},{-80,20}}), iconTransformation(extent={{-120,-20},{-80,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[nTotalOutputElements] annotation (Placement(transformation(extent={{80,-20},{120,20}}), iconTransformation(extent={{80,-20},{120,20}})));
 
 equation
   y[:] = InterfaceFunctions.runInferenceFlatTensor(
