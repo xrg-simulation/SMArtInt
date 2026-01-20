@@ -149,7 +149,11 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 
     // Create IO binding for faster I/O paths
     try {
-        mp_binding = new Ort::IoBinding(*mp_session);
+        // ToDo Find out if its possible to use I/O-Binding for GPU Inference - At the moment deactivated
+        if (!m_cudaAvailable)
+        {
+            mp_binding = new Ort::IoBinding(*mp_session);
+        }
     } catch (const Ort::Exception &e) {
         // If binding creation fails, continue without it
         mp_binding = nullptr;
