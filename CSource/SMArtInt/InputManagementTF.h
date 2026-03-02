@@ -10,8 +10,8 @@
 
 class InputManagementTF : public InputManagement {
 public:
-    InputManagementTF(bool stateful, double fixInterval, unsigned int nInputEntries, TensorflowDllHandler* p_tfDll);
-    bool addStateOut(const TfLiteTensor* stateOutTensor);
+	InputManagementTF(bool stateful, double fixInterval, unsigned int nInputEntries, TensorflowDllHandler* p_tfDll, unsigned int batchSize = 1);
+	bool addStateOut(const TfLiteTensor* stateOutTensor);
     double* handleInpts(double time, unsigned int iStep, double* flatInp, bool firstInvoke);
     bool addStateInp(TfLiteTensor* stateInpTensor);
     bool updateFinishedStep(unsigned int nSteps);

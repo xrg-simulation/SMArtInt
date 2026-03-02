@@ -2,8 +2,8 @@ within SMArtInt.Blocks;
 model EvaluateSimpleFeedForwardNeuralNetwork
   extends BaseClasses.BaseFeedForwardNeuralNet;
 
-  Modelica.Blocks.Interfaces.RealInput arrayIn[size(array2DFlatteningModel.arrayIn, 1),size(array2DFlatteningModel.arrayIn, 2)] annotation (Placement(transformation(extent={{-108,-10},{-88,10}}), iconTransformation(extent={{-108,-10},{-88,10}})));
-  Modelica.Blocks.Interfaces.RealOutput arrayOut[size(array2DDeflatteningModel.arrayOut, 1),size(array2DDeflatteningModel.arrayOut, 2)] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
+  Modelica.Blocks.Interfaces.RealInput arrayIn[batchSize, numberOfInputs] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}), iconTransformation(extent={{-110,-10},{-90,10}})));
+  Modelica.Blocks.Interfaces.RealOutput arrayOut[batchSize, numberOfOutputs] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
 equation
   connect(array2DFlatteningModel.arrayIn, arrayIn) annotation (Line(points={{-42,0},{-98,0}}, color={0,0,127}));
   connect(array2DDeflatteningModel.arrayOut, arrayOut) annotation (Line(points={{41.2,0},{100,0}}, color={0,0,127}));

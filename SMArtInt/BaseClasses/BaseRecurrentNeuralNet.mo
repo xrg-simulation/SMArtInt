@@ -2,7 +2,7 @@ within SMArtInt.BaseClasses;
 partial model BaseRecurrentNeuralNet
   extends BaseNeuralNet(
     final stateful=false,
-    final outputSizes=if returnSequences then {batchSize,nHistoricElements,numberOfOutputs} else {1,numberOfOutputs},
+    final outputSizes=if returnSequences then {batchSize,nHistoricElements,numberOfOutputs} else {batchSize,numberOfOutputs},
     final outputDimensions=if returnSequences then 3 else 2,
     final inputSizes={batchSize,nHistoricElements,numberOfInputs},
     final inputDimensions=3);
@@ -23,9 +23,11 @@ partial model BaseRecurrentNeuralNet
     final nOutputs=numberOfOutputs,
     final samplePeriod=samplePeriod,
     final nHistoricElements=nHistoricElements,
+    flatteningMethod=SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod.OldFIrstInputSeq,
     final returnSequences=returnSequences,
     final smartint=smartint,
-    final continuous=continuous) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+    final continuous=continuous,
+    final batchSize=batchSize) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
