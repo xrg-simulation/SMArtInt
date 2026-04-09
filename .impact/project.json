@@ -1,0 +1,72 @@
+{
+  "name": "Smartint",
+  "format": "1.0.0",
+  "dependencies": [
+    {
+      "name": "Buildings",
+      "versionSpecifier": "12.1.1+build.804162"
+    },
+    {
+      "name": "Modelica",
+      "versionSpecifier": "4.0.0"
+    }
+  ],
+  "content": [
+    {
+      "relpath": "SMArtInt",
+      "contentType": "MODELICA",
+      "name": "SMArtInt",
+      "defaultDisabled": false,
+      "id": "5a437c8e8df24d6db106a3ceb6506ab0"
+    },
+    {
+      "relpath": "Resources/Views",
+      "contentType": "VIEWS",
+      "defaultDisabled": false,
+      "id": "340438c1b32441778b6cd82c1ae88a86"
+    },
+    {
+      "relpath": "Resources/Favorites",
+      "contentType": "FAVORITES",
+      "defaultDisabled": false,
+      "id": "ae0bcd3806e64487aa95e7db9030fb3e"
+    },
+    {
+      "relpath": "Resources/CustomFunctions",
+      "contentType": "CUSTOM_FUNCTIONS",
+      "defaultDisabled": false,
+      "id": "cc2c6390a2fe40b79551fcf6b3ddcb21"
+    },
+    {
+      "relpath": "Resources/Custom",
+      "contentType": "GENERIC",
+      "defaultDisabled": false,
+      "id": "1edcb78c9e064546957b4edf41cf69c3"
+    },
+    {
+      "relpath": "ReferenceResults",
+      "contentType": "REFERENCE_RESULTS",
+      "defaultDisabled": false,
+      "id": "07a74f30d7b544d3aa1697355f1e4181"
+    },
+    {
+      "relpath": "Resources/ExperimentDefinitions",
+      "contentType": "EXPERIMENT_DEFINITIONS",
+      "defaultDisabled": false,
+      "id": "1c7f68bfe9a74e1b87b9f2c1364e18b6"
+    },
+    {
+      "relpath": "CSource",
+      "contentType": "GENERIC",
+      "defaultDisabled": true,
+      "id": "b6cb5e729b394331a18b3b77d9636374"
+    },
+    {
+      "relpath": "External",
+      "contentType": "GENERIC",
+      "defaultDisabled": true,
+      "id": "8f77f1dc5e044ddeae14352004162545"
+    }
+  ],
+  "executionOptions": []
+}
