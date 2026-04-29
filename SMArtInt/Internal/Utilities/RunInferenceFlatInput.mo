@@ -9,7 +9,7 @@ model RunInferenceFlatInput
   Modelica.Blocks.Interfaces.RealOutput y[nTotalOutputElements] annotation (Placement(transformation(extent={{80,-20},{120,20}}), iconTransformation(extent={{80,-20},{120,20}})));
 
 equation
-  y[:] = InterfaceFunctions.runInferenceFlatTensor(
+  y = InterfaceFunctions.runInferenceFlatTensor(
     smartint,
     time,
     u,

@@ -46,7 +46,7 @@ model RunInterferenceRNN
 
 equation
 
-  y_flat[:] = InterfaceFunctions.runInferenceFlatTensor(
+  y_flat = InterfaceFunctions.runInferenceFlatTensor(
     smartint,
     time,
     finalFlatTensor,

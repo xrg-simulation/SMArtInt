@@ -19,7 +19,7 @@ initial equation
 equation
   if continuous then
     sampleTrigger = true;
-    y[:] = InterfaceFunctions.runInferenceFlatTensor(
+    y = InterfaceFunctions.runInferenceFlatTensor(
       smartint,
       time,
       u,
