@@ -3,19 +3,19 @@
 
 using OrtGetApiBaseFn = const OrtApiBase* (ORT_API_CALL *)(void);
 
-OnnxRuntimeDllHandlerWin::OnnxRuntimeDllHandlerWin(LPCSTR dllPath, bool useGPU)
+OnnxRuntimeDllHandlerWin::OnnxRuntimeDllHandlerWin(LPCSTR dllPath)
 {
     // Load ONNX Runtime DLL dynamically and initialize C++ API
     // If dllPath is null, try to get from Utils
+    if (!dllPath || dllPath[0] == '\0') {
+        throw std::runtime_error("OnnxRuntimeDllHandlerLinux: soPath is null or empty");
+    }
+
+    std::cout << "Loading libonnxruntime_c.so from " << dllPath << std::endl;
     HMODULE mod = nullptr;
-    if (dllPath && dllPath[0] != '\0') {
-        mod = ::LoadLibraryA(dllPath);
-    }
-    if (!mod) {
-        auto path = Utils::getOnnxRuntimeDllPathWin(useGPU);
-        mod = ::LoadLibraryA(path.c_str());
-    }
+    mod = ::LoadLibraryA(dllPath);
     _module = mod;
+
     if (!_module) {
         throw std::runtime_error("Failed to load onnxruntime.dll");
     }

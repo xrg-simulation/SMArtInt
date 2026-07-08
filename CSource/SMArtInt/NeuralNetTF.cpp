@@ -22,6 +22,7 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
 #ifdef _WIN32
     try {
         std::string tensorflowDllPath = Utils::getTensorflowDllPathWin();
+        mp_modelicaUtilityHelper->ModelicaMessage(("SMArtInt: Loading TensorFlowLite Runtime Library: " + tensorflowDllPath + "\n").c_str());
         mp_tfdll = new TensorflowDllHandlerWin(tensorflowDllPath.c_str());
     } catch (const std::exception& ex) {
         auto msg = std::string("SMArtInt: Failed to load tensorflowlite_c.dll: ") + ex.what() + "\n";
@@ -46,7 +47,8 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
     }
 #else
     try {
-        std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux();
+        std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux(false, tfLiteModelPath);
+        mp_modelicaUtilityHelper->ModelicaMessage(("SMArtInt: Loading TensorFlowLite Runtime Library: " + tensorflowDllPath + "\n").c_str());
         mp_tfdll = new TensorflowDllHandlerLinux(tensorflowDllPath.c_str());
     } catch (const std::exception& ex) {
         auto msg = std::string("SMArtInt: Failed to load tensorflowlite_c.so: ") + ex.what() + "\n";
@@ -55,7 +57,7 @@ TfLiteNeuralNet::TfLiteNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper,
     // create the delegate for TF flex ops
     if (useFlexOps) {
         try {
-            std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux(true);
+            std::string tensorflowDllPath = Utils::getTensorflowDllPathLinux(true, tfLiteModelPath);
             auto hdll = dlopen(tensorflowDllPath.c_str(), RTLD_LAZY); // Load the shared library
             auto TF_AcquireFlexDelegate = reinterpret_cast<tflite::Interpreter::TfLiteDelegatePtr(*)()>(dlsym(hdll, "TF_AcquireFlexDelegate"));
             if (TF_AcquireFlexDelegate == nullptr) {

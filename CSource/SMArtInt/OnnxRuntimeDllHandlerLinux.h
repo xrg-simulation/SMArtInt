@@ -8,7 +8,7 @@
 
 class OnnxRuntimeDllHandlerLinux : public OnnxRuntimeDllHandler {
 public:
-    explicit OnnxRuntimeDllHandlerLinux(const char* soPath, bool useGPU);
+    explicit OnnxRuntimeDllHandlerLinux(const char* soPath);
     ~OnnxRuntimeDllHandlerLinux() override;
 private:
     void* _handle{nullptr};
