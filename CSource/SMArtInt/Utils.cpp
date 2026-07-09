@@ -252,6 +252,8 @@ std::string Utils::getTensorflowDllPathLinux(bool flexDelegate, const char* mode
     {
         auto errorMessage = std::string("SMArtInt: Error determining Tensorflow library path: ") + e.what();
 
+        // This is a necessary fallback in case the library path cannot be determined with the method above
+        // (e.g., in Modelon Impact)
         std::filesystem::path fallbackTfPath = getModelBasedLibraryFolder(modelPath, libraryName);
         if (!fallbackTfPath.empty()) {
             if (std::filesystem::exists(fallbackTfPath, ec)) {
@@ -323,6 +325,8 @@ std::string Utils::getOnnxRuntimeDllPathLinux(bool useGPU, const char* modelPath
     {
         auto errorMessage = std::string("SMArtInt: Error determining ONNX Runtime library path: ") + e.what();
 
+        // This is a necessary fallback in case the library path cannot be determined with the method above
+        // (e.g., in Modelon Impact)
         std::filesystem::path fallbackOnnxPath = getModelBasedLibraryFolder(modelPath, libraryName);
         if (!fallbackOnnxPath.empty()) {
             if (std::filesystem::exists(fallbackOnnxPath, ec)) {
