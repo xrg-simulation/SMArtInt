@@ -12,12 +12,16 @@ namespace Utils {
 	// function to format messages to modelica
 	template<typename ... Args> std::string string_format(const std::string& format, Args ... args)
 	{
-		int size_s = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
-		if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
-		auto size = static_cast<size_t>(size_s);
-		auto buf = std::make_unique<char[]>(size);
-		std::snprintf(buf.get(), size, format.c_str(), args ...);
-		return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+		if constexpr (sizeof...(args) == 0) {
+			return format;
+		} else {
+			int size_s = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
+			if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
+			auto size = static_cast<size_t>(size_s);
+			auto buf = std::make_unique<char[]>(size);
+			std::snprintf(buf.get(), size, format.c_str(), args ...);
+			return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+		}
 	}
 
 	int compareTensorSizes(const TfLiteTensor* A, const TfLiteTensor* B, unsigned int* unmatchedVals,
@@ -34,10 +38,10 @@ namespace Utils {
     // When useGPU is false, prefer CPU-optimized DLL name
     std::string getOnnxRuntimeDllPathWin(bool useGPU);
 #else
-    std::string getTensorflowDllPathLinux(bool flexDelegate=false);
+    std::string getTensorflowDllPathLinux(bool flexDelegate=false, const char* modelPath=nullptr);
     // Select ONNX Runtime SO depending on GPU usage
     // When useGPU is false, prefer CPU-optimized SO name
-    std::string getOnnxRuntimeDllPathLinux(bool useGPU);
+    std::string getOnnxRuntimeDllPathLinux(bool useGPU, const char* modelPath=nullptr);
 #endif
 
 	// individual casting functions

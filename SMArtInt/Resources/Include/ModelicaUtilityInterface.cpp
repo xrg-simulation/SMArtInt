@@ -6,14 +6,16 @@
 
 static ModelicaUtilityHelper s_ModelicaUtilityHelper;
 
-static void* createModelicaUtitlityHelper()
+void* createModelicaUtitlityHelper()
 {
 	s_ModelicaUtilityHelper.ModelicaError = ModelicaError;
 	s_ModelicaUtilityHelper.ModelicaMessage = ModelicaMessage;
+	s_ModelicaUtilityHelper.ModelicaFormatMessage = ModelicaFormatMessage;
+	s_ModelicaUtilityHelper.ModelicaFormatError = ModelicaFormatError;
 	return &s_ModelicaUtilityHelper;
 }
 
-static void deleteModelicaUtitlityHelper(void* externalObject)
+void deleteModelicaUtitlityHelper(void* externalObject)
 {
 
 }

@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include "NeuralNet.h"
 #include "OnnxRuntimeDllHandler.h"
 
@@ -63,6 +64,8 @@ private:
 
     std::vector<const char*> input_names_char; // input names as char; needed for onnx inference
     std::vector<const char*> output_names_char; // output names as char; needed for onnx inference
+
+    std::mutex m_mutex; // mutex for thread-safe destruction
 
     void loadAndInit(const char* onnxModelPath); // internal function to prepare model - called by constructor
 

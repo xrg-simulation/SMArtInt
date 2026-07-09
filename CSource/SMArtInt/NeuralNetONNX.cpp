@@ -35,15 +35,36 @@ OnnxNeuralNet::OnnxNeuralNet(ModelicaUtilityHelper *p_modelicaUtilityHelper, con
 }
 
 OnnxNeuralNet::~OnnxNeuralNet() {
-    //mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Destructor ONNX Neural Network\n");
-    // clean up allocated onnx stuff - Correct way?
-    // delete(mp_session);
-    // delete(mp_binding);
-    // delete(mp_model);
-    // delete(input_data);
-    // delete(tensorData);
-    //clean up time step manager
+    std::lock_guard<std::mutex> lock(m_mutex);
+    // Release output tensors first (they reference the session)
+    output_tensors.clear();
+    // Release persistent input tensor
+    m_inputTensor = Ort::Value{nullptr};
+    // Release IoBinding before session (it references the session)
+    delete mp_binding;
+    mp_binding = nullptr;
+    // Release session before Env (session references Env)
+    delete mp_session;
+    mp_session = nullptr;
+    // Release Env (Ort::Env)
+    delete mp_model;
+    mp_model = nullptr;
+    // Release MemoryInfo objects
+    memInfo = Ort::MemoryInfo{nullptr};
+    memInfoCudaPinned = Ort::MemoryInfo{nullptr};
+    // Release SessionOptions
+    mp_options = Ort::SessionOptions{nullptr};
+    // Release heap-allocated data vectors
+    delete input_data;
+    input_data = nullptr;
+
+    delete tensorData;
+    tensorData = nullptr;
+    // Release time step manager
     delete mp_timeStepMngmt;
+    mp_timeStepMngmt = nullptr;
+    // mp_onnxDll (unique_ptr) is released last automatically,
+    // ensuring the ONNX Runtime DLL outlives all Ort::* objects
 }
 
 void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
@@ -54,7 +75,9 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     if (!mp_onnxDll) {
 #ifdef _WIN32
         try {
-            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerWin>(nullptr, m_useGPU);
+            std::string onnxDllPath = Utils::getOnnxRuntimeDllPathWin(m_useGPU);
+            mp_modelicaUtilityHelper->ModelicaMessage(std::string("SMArtInt: Using ONNX Runtime Library: ").append(onnxDllPath).c_str());
+            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerWin>(onnxDllPath.c_str());
         } catch (const std::exception& ex) {
             auto msg = std::string("SMArtInt: Failed to load onnxruntime_c.dll: ") + ex.what() + "\n";
             mp_modelicaUtilityHelper->ModelicaError(msg.c_str());
@@ -63,7 +86,9 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
         }
 #else
         try {
-            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerLinux>(nullptr, m_useGPU);
+            std::string onnxDllPath = Utils::getOnnxRuntimeDllPathLinux(m_useGPU, onnxModelPath);
+            mp_modelicaUtilityHelper->ModelicaMessage(std::string("SMArtInt: Using ONNX Runtime Library: ").append(onnxDllPath).c_str());
+            mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerLinux>(onnxDllPath.c_str());
         } catch (const std::exception& ex) {
             auto msg = std::string("SMArtInt: Failed to load libonnxruntime_c.so: ") + ex.what() + "\n";
             mp_modelicaUtilityHelper->ModelicaError(msg.c_str());

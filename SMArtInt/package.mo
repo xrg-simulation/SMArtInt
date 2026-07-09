@@ -1,7 +1,7 @@
 within ;
 package SMArtInt
   annotation (
-    uses(Modelica(version="4.0.0")),
+    uses(Modelica(version="4.1.0")),
     preferredView="info",
     Documentation(info="<html>
 <p><img src=\"modelica://SMArtInt/Resources/Images/SMArtInt-library.jpg\"/> </p>

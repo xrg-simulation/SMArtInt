@@ -4,24 +4,24 @@
 
 using OrtGetApiBaseFn = const OrtApiBase* (*)(void);
 
-OnnxRuntimeDllHandlerLinux::OnnxRuntimeDllHandlerLinux(const char* soPath, bool useGPU)
+OnnxRuntimeDllHandlerLinux::OnnxRuntimeDllHandlerLinux(const char* soPath)
 {
-    void* handle = nullptr;
-    if (soPath && soPath[0] != '\0') {
-        handle = dlopen(soPath, RTLD_LAZY | RTLD_LOCAL);
+    if (!soPath || soPath[0] == '\0') {
+        throw std::runtime_error("OnnxRuntimeDllHandlerLinux: soPath is null or empty");
     }
-    if (!handle) {
-        auto path = Utils::getOnnxRuntimeDllPathLinux(useGPU);
-        handle = dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
-    }
-    _handle = handle;
+
+    std::cout << "Loading libonnxruntime_c.so from " << soPath << std::endl;
+    _handle = dlopen(soPath, RTLD_LAZY);
+
     if (!_handle) {
-        throw std::runtime_error("Failed to load libonnxruntime_c.so");
+        std::string errorMsg = "Failed to load libonnxruntime_c.so at " + std::string(soPath) + ". Error: " + dlerror();
+        throw std::runtime_error(errorMsg);
     }
 
     auto getApiBase = reinterpret_cast<OrtGetApiBaseFn>(dlsym(_handle, "OrtGetApiBase"));
     if (!getApiBase) {
-        throw std::runtime_error("Failed to resolve OrtGetApiBase in libonnxruntime_c.so");
+        std::string errorMsg = "Failed to resolve OrtGetApiBase in libonnxruntime_c.so. Error: " + std::string(dlerror());
+        throw std::runtime_error(errorMsg);
     }
     const OrtApiBase* base = getApiBase();
     Ort::InitApi(base->GetApi(ORT_API_VERSION));
