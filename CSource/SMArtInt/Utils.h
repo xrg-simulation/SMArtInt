@@ -65,7 +65,13 @@ namespace Utils {
 		}
 
         void addStateInput(Ort::Value* stateInpTensor, unsigned int batchSize = 1) {
-            auto elementSize = (stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) ? sizeof(float) : 0; // Currently only floats supported
+			size_t elementSize = 0;
+			const auto elementType = stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType();
+			if (elementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+				elementSize = sizeof(float);
+			} else if (elementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+				elementSize = sizeof(double);
+			}
             if (elementSize == 0) throw std::invalid_argument("Unsupported tensor type in StateInputsContainer::addStateInput");
 
             size_t totalByteSize = stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * elementSize;
