@@ -4,6 +4,21 @@
 
 #include "InputManagementONNX.h"
 
+namespace {
+    size_t getOnnxElementSize(ONNXTensorElementDataType elementType) {
+        switch (elementType) {
+            case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
+                return sizeof(float);
+            case ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE:
+                return sizeof(double);
+            default:
+                throw std::invalid_argument(
+                        Utils::string_format("Unsupported ONNX tensor element type: %i",
+                                             static_cast<int>(elementType)));
+        }
+    }
+}
+
 InputManagementONNX::InputManagementONNX(bool stateful, double fixInterval, unsigned int nInputEntries, unsigned int batchSize) :
 InputManagement(stateful, fixInterval, nInputEntries, batchSize){
 }
@@ -27,6 +42,17 @@ void InputManagementONNX::addStateOut(Ort::Value* stateOutTensor)
                                                              "(Input has %i entries whereas output has %i entries)!"
                     , i, ret, unmatchedVals[0], unmatchedVals[1]));
         }
+
+
+        const auto inputType = mp_OnnxStateInpTensors[i]->GetTensorTypeAndShapeInfo().GetElementType();
+        const auto outputType = mp_OnnxStateOutTensors[i]->GetTensorTypeAndShapeInfo().GetElementType();
+        if (inputType != outputType) {
+            throw std::invalid_argument(Utils::string_format(
+                    "Unmatched tensor data type for state input and output # %i (Input type: %i, output type: %i)!",
+                    i,
+                    static_cast<int>(inputType),
+                    static_cast<int>(outputType)));
+        }
     }
     else {
         // Error
@@ -34,7 +60,6 @@ void InputManagementONNX::addStateOut(Ort::Value* stateOutTensor)
                                                          "stateful=True if state inputs and state outputs are "
                                                          "matching!"));
     }
-    //ToDo check type (and sizes??)
 }
 
 bool InputManagementONNX::updateStateOut(Ort::Value* stateOutTensor)
@@ -88,11 +113,12 @@ double* InputManagementONNX::handleInpts(double time, unsigned int iStep, double
         else {
             // copy state output to input
             for (unsigned int i = 0; i < m_nStateArr; ++i) {
+                const auto tensorInfo = mp_OnnxStateOutTensors[i]->GetTensorTypeAndShapeInfo();
+                const auto byteSize = getOnnxElementSize(tensorInfo.GetElementType()) *
+                                      static_cast<size_t>(tensorInfo.GetElementCount());
                 std::memcpy(mp_OnnxStateInpTensors[i]->GetTensorMutableRawData(),
                             mp_OnnxStateOutTensors[i]->GetTensorMutableRawData(),
-                            sizeof(mp_OnnxStateOutTensors[i]->GetTensorTypeAndShapeInfo().GetElementType()) * \
-                                        mp_OnnxStateOutTensors[i]->GetTensorTypeAndShapeInfo().GetElementCount()
-                            );
+                            byteSize);
             }
         }
         input_pointer = mp_flatInterpolatedInp;
@@ -132,7 +158,7 @@ bool InputManagementONNX::updateFinishedStep(unsigned int nSteps)
 void InputManagementONNX::initialize(double time, double* p_stateValues, const unsigned int &nStateValues)
 {
     if (!m_active) return;
-
+    (void)time;
     if (nStateValues != m_nStateValues) {
         throw std::invalid_argument(Utils::string_format(
                 "SMArtInt needs to initialize %i but %i are given", m_nStateValues, nStateValues));
@@ -148,9 +174,15 @@ void InputManagementONNX::initialize(double time, double* p_stateValues, const u
                 case ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT:
                     castFunc = &Utils::castToFloat;
                     break;
+                case ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE:
+                    castFunc = [](const double& value, void* p_store, unsigned int pos) {
+                        auto* p_double = static_cast<double*>(p_store);
+                        p_double[pos] = value;
+                    };
+                    break;
                 default:
                     throw std::invalid_argument(
-                            "Could not convert state data - SMArtInt currently only supports ONNX models using floats)!");
+                            "Could not convert state data - SMArtInt currently only supports ONNX models using float or double tensors!");
             }
 
             test->addStateInput(mp_OnnxStateInpTensors[iInput], m_batchSize);

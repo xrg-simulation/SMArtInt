@@ -55,8 +55,12 @@ private:
     std::vector<std::string> m_output_names; // vector with input names
     std::vector<std::int64_t> m_output_shapes; // vector with input shapes
 
-    std::vector<float>* input_data{}; // data for feature input
-    std::vector<std::vector<float>>* tensorData{}; // data for state inputs
+    ONNXTensorElementDataType m_inputElementType{ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED};
+
+    std::vector<float>* input_data{}; // data for feature input (float models)
+    std::vector<double>* input_data_double{}; // data for feature input (double models)
+    std::vector<std::vector<float>>* tensorData{}; // data for state inputs (float models)
+    std::vector<std::vector<double>>* tensorDataDouble{}; // data for state inputs (double models)
     std::vector<Ort::Value> output_tensors; // tensors to store the results
 
     // Persistent tensor for primary input to avoid per-step allocations

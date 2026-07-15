@@ -57,9 +57,12 @@ OnnxNeuralNet::~OnnxNeuralNet() {
     // Release heap-allocated data vectors
     delete input_data;
     input_data = nullptr;
-
+    delete input_data_double;
+    input_data_double = nullptr;
     delete tensorData;
     tensorData = nullptr;
+    delete tensorDataDouble;
+    tensorDataDouble = nullptr;
     // Release time step manager
     delete mp_timeStepMngmt;
     mp_timeStepMngmt = nullptr;
@@ -236,14 +239,23 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
         m_input_shapes[0] = mp_inputSizes[0]; //1
         m_output_shapes[0] = mp_outputSizes[0];
     }
-
+    m_inputElementType = mp_session->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetElementType();
     // If binding available, pre-bind inputs and outputs once
     if (mp_binding) {
         try {
             // Prepare persistent primary input tensor; prefer CudaPinned when CUDA is available for faster H2D
-            input_data = new std::vector<float>(m_nInputEntries);
             const Ort::MemoryInfo& inMemInfo = (m_cudaAvailable && memInfoCudaPinned) ? memInfoCudaPinned : memInfo;
-            m_inputTensor = Ort::Value::CreateTensor<float>(inMemInfo, input_data->data(), input_data->size(), m_input_shapes.data(), m_input_shapes.size());
+            if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+                input_data = new std::vector<float>(m_nInputEntries);
+                m_inputTensor = Ort::Value::CreateTensor<float>(inMemInfo, input_data->data(), input_data->size(), m_input_shapes.data(), m_input_shapes.size());
+            } else if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+                input_data_double = new std::vector<double>(m_nInputEntries);
+                m_inputTensor = Ort::Value::CreateTensor<double>(inMemInfo, input_data_double->data(), input_data_double->size(), m_input_shapes.data(), m_input_shapes.size());
+            } else {
+                std::string message = "SMArtInt: Unsupported ONNX input tensor element type for primary input: " +
+                        std::to_string(static_cast<int>(m_inputElementType)) + "\n";
+                mp_modelicaUtilityHelper->ModelicaError(message.c_str());
+            }
 
             // Bind primary input
             mp_binding->ClearBoundInputs();
@@ -302,10 +314,12 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
     if (mp_timeStepMngmt->isActive()) {
         mp_modelicaUtilityHelper->ModelicaMessage("SMArtInt: Handling additional inputs as states");
         tensorData = new std::vector<std::vector<float>>(static_cast<int>(mp_session->GetInputCount()) -1);
+        tensorDataDouble = new std::vector<std::vector<double>>(static_cast<int>(mp_session->GetInputCount()) -1);
         for (int i = 1; i < mp_session->GetInputCount(); ++i) {
             try {
                 std::vector<int64_t> input_shape;
                 input_shape = mp_session->GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetShape();
+                const auto stateElementType = mp_session->GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType();
                 
                 // Adjust batch size if it's dynamic (-1) or if it doesn't match the desired batch size
                 if (input_shape[0] == -1 || input_shape[0] != mp_inputSizes[0]) {
@@ -318,8 +332,19 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
                 for (int64_t dim : input_shape) {
                     totalSize *= dim;
                 }
-                tensorData->at(i-1) = std::vector<float>(totalSize, 0.0f);
-                auto* tensor = new Ort::Value(Ort::Value::CreateTensor<float>(memInfo, (*tensorData)[i-1].data(), (*tensorData)[i-1].size(), input_shape.data(), input_shape.size()));
+                Ort::Value* tensor = nullptr;
+                if (stateElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+                    tensorData->at(i-1) = std::vector<float>(totalSize, 0.0f);
+                    tensor = new Ort::Value(Ort::Value::CreateTensor<float>(memInfo, (*tensorData)[i-1].data(), (*tensorData)[i-1].size(), input_shape.data(), input_shape.size()));
+                } else if (stateElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+                    tensorDataDouble->at(i-1) = std::vector<double>(totalSize, 0.0);
+                    tensor = new Ort::Value(Ort::Value::CreateTensor<double>(memInfo, (*tensorDataDouble)[i-1].data(), (*tensorDataDouble)[i-1].size(), input_shape.data(), input_shape.size()));
+                } else {
+                    std::string message = "SMArtInt: Unsupported ONNX input tensor element type for state input "
+                                          + std::to_string(i) + ": "
+                                          + std::to_string(static_cast<int>(stateElementType)) + "\n";
+                    mp_modelicaUtilityHelper->ModelicaError(message.c_str());
+                }
                 mp_timeStepMngmt->addStateInp(tensor);
 
             }
@@ -328,8 +353,12 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
             }
         }
     }
-    // Ensure input_data exists if not created above (e.g., when mp_binding was not available)
-    if (!input_data) input_data = new std::vector<float>(m_nInputEntries);
+    // Ensure primary input buffer exists if not created above (e.g., when mp_binding was not available)
+    if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT && !input_data) {
+        input_data = new std::vector<float>(m_nInputEntries);
+    } else if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE && !input_data_double) {
+        input_data_double = new std::vector<double>(m_nInputEntries);
+    }
 
     // After state tensors are created, if binding is available, bind them once
     if (mp_binding && mp_timeStepMngmt->isActive()) {
@@ -383,8 +412,19 @@ void OnnxNeuralNet::runInferenceFlatTensor(double time, double* input, unsigned 
         double* inpInput = mp_timeStepMngmt->handleInpts(time, i, input, m_firstInvoke);
 
         // we write the data directly into the data array of the tensor
-        for (unsigned int j = 0; j < m_nInputEntries; ++j) {
-            (*input_data)[j] = static_cast<float>(inpInput[j]);
+        if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+            for (unsigned int j = 0; j < m_nInputEntries; ++j) {
+                (*input_data)[j] = static_cast<float>(inpInput[j]);
+            }
+        } else if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+            for (unsigned int j = 0; j < m_nInputEntries; ++j) {
+                (*input_data_double)[j] = inpInput[j];
+            }
+        } else
+        {
+            std::string message = "SMArtInt: Unsupported ONNX input tensor element type for inference: " +
+                                  std::to_string(static_cast<int>(m_inputElementType)) + "\n";
+            mp_modelicaUtilityHelper->ModelicaError(message.c_str());
         }
 
         // If we have IoBinding set up, inputs/outputs are pre-bound and persistent
@@ -392,7 +432,15 @@ void OnnxNeuralNet::runInferenceFlatTensor(double time, double* input, unsigned 
         std::vector<Ort::Value> input_tensors;
         if (!mp_binding) {
             // Feature input tensor (CPU)
-            input_tensors.emplace_back(Ort::Value::CreateTensor<float>(memInfo, input_data->data(), input_data->size(), m_input_shapes.data(), m_input_shapes.size()));
+            if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+                input_tensors.emplace_back(Ort::Value::CreateTensor<float>(memInfo, input_data->data(), input_data->size(), m_input_shapes.data(), m_input_shapes.size()));
+            } else if (m_inputElementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+                input_tensors.emplace_back(Ort::Value::CreateTensor<double>(memInfo, input_data_double->data(), input_data_double->size(), m_input_shapes.data(), m_input_shapes.size()));
+            } else {
+                std::string message = "SMArtInt: Unsupported ONNX input tensor element type for tensor creation: " +
+                                      std::to_string(static_cast<int>(m_inputElementType)) + "\n";
+                mp_modelicaUtilityHelper->ModelicaError(message.c_str());
+            }
 
             // Additional state inputs: wrap the persistent state buffer in lightweight Ort::Value wrappers (no memcpy)
             // This avoids per-step data copies and ensures states come strictly from the state manager (rollback-safe)
@@ -406,8 +454,14 @@ void OnnxNeuralNet::runInferenceFlatTensor(double time, double* input, unsigned 
                         float* sdata = reinterpret_cast<float*>(p_state_tensor->GetTensorMutableRawData());
                         Ort::Value sval = Ort::Value::CreateTensor<float>(memInfo, sdata, elem_count, sshape.data(), sshape.size());
                         input_tensors.emplace_back(std::move(sval));
+                    } else if (sinfo.GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+                        auto sshape = sinfo.GetShape();
+                        size_t elem_count = static_cast<size_t>(sinfo.GetElementCount());
+                        double* sdata = reinterpret_cast<double*>(p_state_tensor->GetTensorMutableRawData());
+                        Ort::Value sval = Ort::Value::CreateTensor<double>(memInfo, sdata, elem_count, sshape.data(), sshape.size());
+                        input_tensors.emplace_back(std::move(sval));
                     } else {
-                        mp_modelicaUtilityHelper->ModelicaError("SMArtInt: State tensor type is not float (unsupported).\n");
+                        mp_modelicaUtilityHelper->ModelicaError("SMArtInt: State tensor type is not float/double (unsupported).\n");
                     }
                 } else {
                     mp_modelicaUtilityHelper->ModelicaError("SMArtInt: Invalid state tensor provided by state manager.\n");
@@ -468,8 +522,17 @@ void OnnxNeuralNet::runInferenceFlatTensor(double time, double* input, unsigned 
             for (size_t j = 0; j < copy_count; ++j) {
                 output[j] = static_cast<double>(tensor_data[j]);
             }
+        } else if (tensor_info.GetElementType() == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE)
+        {
+            const double* tensor_data = output_tensors[0].GetTensorData<double>();
+            const size_t elem_count = static_cast<size_t>(tensor_info.GetElementCount());
+            const size_t copy_count = (elem_count < static_cast<size_t>(m_nOutputEntries))
+                                      ? elem_count
+                                      : static_cast<size_t>(m_nOutputEntries);
+            std::memcpy(output, tensor_data, copy_count * sizeof(double));
         } else {
-            mp_modelicaUtilityHelper->ModelicaError("SMArtInt: Output tensor element type is not float (unsupported for direct copy).\n");
+            mp_modelicaUtilityHelper->ModelicaError(
+                "SMArtInt: Output tensor element type is unsupported (only float/double).\n");
         }
     } else {
         mp_modelicaUtilityHelper->ModelicaError("SMArtInt: No output tensor available after inference.\n");
