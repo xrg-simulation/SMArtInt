@@ -7,7 +7,7 @@ model EvaluateRecurrentNeuralNet
 
 equation
   connect(u, runInterferenceHistory.u) annotation (Line(points={{-100,0},{-10,0}}, color={0,0,127}));
-  connect(runInterferenceHistory.y, y) annotation (Line(points={{9.8,0},{100,0}}, color={0,0,127}));
+  connect(runInterferenceHistory.y, y) annotation (Line(points={{10,0},{100,0}}, color={0,0,127}));
   connect(runInterferenceHistory.ySequences, ySequences) annotation (Line(points={{10,-6},{40,-6},{40,-50},{100,-50}}, color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>Use this block if you want to include a recurrent neural network in Modelica.</p>

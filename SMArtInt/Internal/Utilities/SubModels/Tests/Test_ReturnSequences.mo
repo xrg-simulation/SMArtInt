@@ -30,10 +30,10 @@ model Test_ReturnSequences
     pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/ReturnSequencesTester/accumulatorRNN_seq.tflite"))
                      annotation (Placement(transformation(extent={{20,-30},{40,-10}})));
 equation
-  connect(ramp.y, SeqFalse.u[1, 1]) annotation (Line(points={{-19,20},{20,20},{20,19.85}}, color={0,0,127}));
-  connect(const.y, SeqFalse.u[2, 1]) annotation (Line(points={{-19,-20},{0,-20},{0,20},{20,20},{20,20.15}}, color={0,0,127}));
-  connect(ramp.y, SeqTrue.u[1, 1]) annotation (Line(points={{-19,20},{0,20},{0,-20},{20,-20},{20,-20.15}}, color={0,0,127}));
-  connect(const.y, SeqTrue.u[2, 1]) annotation (Line(points={{-19,-20},{20,-20}}, color={0,0,127}));
+  connect(ramp.y, SeqFalse.u[1, 1]) annotation (Line(points={{-19,20},{20,20},{20,19.75}}, color={0,0,127}));
+  connect(const.y, SeqFalse.u[2, 1]) annotation (Line(points={{-19,-20},{0,-20},{0,20},{20,20},{20,20.25}}, color={0,0,127}));
+  connect(ramp.y, SeqTrue.u[1, 1]) annotation (Line(points={{-19,20},{0,20},{0,-20},{20,-20},{20,-20.25}}, color={0,0,127}));
+  connect(const.y, SeqTrue.u[2, 1]) annotation (Line(points={{-19,-20},{0,-20},{0,-19.75},{20,-19.75}}, color={0,0,127}));
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false)),

@@ -6,7 +6,7 @@ model EvaluateSimpleFeedForwardNeuralNetwork
   Modelica.Blocks.Interfaces.RealOutput arrayOut[batchSize, numberOfOutputs] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
 equation
   connect(array2DFlatteningModel.arrayIn, arrayIn) annotation (Line(points={{-42,0},{-98,0}}, color={0,0,127}));
-  connect(array2DDeflatteningModel.arrayOut, arrayOut) annotation (Line(points={{41.2,0},{100,0}}, color={0,0,127}));
+  connect(array2DDeflatteningModel.arrayOut, arrayOut) annotation (Line(points={{41,0},{100,0}}, color={0,0,127}));
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false)),

@@ -28,7 +28,7 @@ model RunInterferenceRNN
   Real[batchSize*nHistoricElements*nInputs] finalFlatTensor;
 
   Modelica.Blocks.Interfaces.RealInput u[batchSize,nInputs] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y[batchSize,nOutputs] annotation (Placement(transformation(extent={{78,-20},{118,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[batchSize,nOutputs] annotation (Placement(transformation(extent={{80,-20},{120,20}})));
   SubModels.RNNFlattenInput flattenedHistory[batchSize](
     each useClaRaDelay=useClaRaDelay,
     each nInputs=nInputs,
