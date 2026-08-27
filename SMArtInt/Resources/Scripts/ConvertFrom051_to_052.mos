@@ -1,4 +1,4 @@
-//Convert Package from SMArtInt 0.5.1
+//Convert Package from SMArtInt 0.5.1 to 0.5.2
 convertClear();
 
 convertModifiers("SMArtInt.BaseClasses.BaseNeuralNet",{"pathToTfLiteFile"},{"pathToAIModel=%pathToTfLiteFile%"},true);

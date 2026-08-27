@@ -16,7 +16,7 @@ equation
   connect(Re, evalNN.u[:, 1]) annotation (Line(points={{-120,60},{-40,60},{-40,0},{-9.8,0}}, color={0,0,127}));
   connect(Pr, evalNN.u[:, 2]) annotation (Line(points={{-120,0},{-9.8,0}}, color={0,0,127}));
   connect(dByL, evalNN.u[:, 3]) annotation (Line(points={{-120,-60},{-40,-60},{-40,0},{-9.8,0}}, color={0,0,127}));
-  connect(Nu, evalNN.arrayOut[:, 1]) annotation (Line(points={{110,0},{11,0}}, color={0,0,127}));
+  connect(Nu, evalNN.y[:, 1]) annotation (Line(points={{110,0},{11,0}}, color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>The model was created with the script createLocalHeatTransferNN.py located in <a href=\"modelica://SMArtInt/Resources/ExampleNeuralNets/NNHeatTransfer/\">ExampleNeuralNets\\NNHeatTransfer\\</a> with setting preset = \"large\" in line 76.</p>
 </html>"), Icon(graphics={Bitmap(extent={{-100,-100},{100,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}));

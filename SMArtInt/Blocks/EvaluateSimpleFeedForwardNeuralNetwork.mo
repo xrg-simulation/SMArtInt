@@ -2,11 +2,11 @@ within SMArtInt.Blocks;
 model EvaluateSimpleFeedForwardNeuralNetwork
   extends BaseClasses.BaseFeedForwardNeuralNet;
 
-  Modelica.Blocks.Interfaces.RealInput arrayIn[batchSize,numberOfInputs]  annotation (Placement(transformation(extent={{-140,-20},{-100,20}}),iconTransformation(extent={{-140,-20},{-100,20}})));
-  Modelica.Blocks.Interfaces.RealOutput arrayOut[batchSize, numberOfOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}),iconTransformation(extent={{100,-10},{120,10}})));
+  Modelica.Blocks.Interfaces.RealInput u[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}), iconTransformation(extent={{-140,-20},{-100,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[batchSize,numberOfOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}), iconTransformation(extent={{100,-10},{120,10}})));
 equation
-  connect(array2DFlatteningModel.arrayIn, arrayIn) annotation (Line(points={{-42,0},{-120,0}},color={0,0,127}));
-  connect(array2DDeflatteningModel.arrayOut, arrayOut) annotation (Line(points={{41,0},{110,0}},   color={0,0,127}));
+  connect(array2DFlatteningModel.arrayIn, u) annotation (Line(points={{-42,0},{-120,0}}, color={0,0,127}));
+  connect(array2DDeflatteningModel.arrayOut, y) annotation (Line(points={{41,0},{110,0}}, color={0,0,127}));
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false)),
