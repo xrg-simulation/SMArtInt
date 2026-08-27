@@ -2,11 +2,11 @@ within SMArtInt.Blocks;
 model EvaluateGenericNeuralNetwork
   extends BaseClasses.BaseGenericNeuralNet;
 
-  Modelica.Blocks.Interfaces.RealInput u[nInputElements] annotation (Placement(transformation(extent={{-110,-10},{-90,10}}), iconTransformation(extent={{-110,-10},{-90,10}})));
-  Modelica.Blocks.Interfaces.RealOutput y[nOutputElements] annotation (Placement(transformation(extent={{90,-10},{110,10}}), iconTransformation(extent={{90,-10},{110,10}})));
+  Modelica.Blocks.Interfaces.RealInput u[nInputElements] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}),iconTransformation(extent={{-140,-20},{-100,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[nOutputElements] annotation (Placement(transformation(extent={{100,-10},{120,10}}),iconTransformation(extent={{100,-10},{120,10}})));
 equation
-  connect(runInference.u, u) annotation (Line(points={{-10,0},{-100,0}}, color={0,0,127}));
-  connect(runInference.y, y) annotation (Line(points={{10,0},{100,0}}, color={0,0,127}));
+  connect(runInference.u, u) annotation (Line(points={{-12,0},{-120,0}}, color={0,0,127}));
+  connect(runInference.y, y) annotation (Line(points={{11,0},{110,0}}, color={0,0,127}));
   annotation (
     Icon(coordinateSystem(preserveAspectRatio=false)),
     Diagram(coordinateSystem(preserveAspectRatio=false)),
