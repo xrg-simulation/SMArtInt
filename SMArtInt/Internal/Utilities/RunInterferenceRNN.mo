@@ -9,7 +9,7 @@ model RunInterferenceRNN
 
   parameter Boolean continuous=false;
   parameter Boolean useClaRaDelay=true "Switch between available delay types: Clara and MSL";
-  parameter SubModels.RNNFlatteningMethod flatteningMethod=SubModels.RNNFlatteningMethod.OldFIrstInputSeq;
+  parameter Types.RNNFlatteningMethod flatteningMethod=Types.RNNFlatteningMethod.OldFIrstInputSeq;
   parameter Boolean returnSequences=false;
 
   parameter Integer batchSize=1;

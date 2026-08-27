@@ -23,7 +23,7 @@ partial model BaseRecurrentNeuralNet
     final nOutputs=numberOfOutputs,
     final samplePeriod=samplePeriod,
     final nHistoricElements=nHistoricElements,
-    flatteningMethod=SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod.OldFIrstInputSeq,
+    flatteningMethod=SMArtInt.Internal.Types.RNNFlatteningMethod.OldFIrstInputSeq,
     final returnSequences=returnSequences,
     final smartint=smartint,
     final continuous=continuous,
