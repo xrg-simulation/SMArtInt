@@ -1,0 +1,28 @@
+within SMArtInt.Tester.ExamplePI.ONNX;
+model StepTest_batched_RNN_onnx
+  extends Modelica.Icons.Example;
+
+  Blocks.EvaluateRecurrentNeuralNet controller(
+    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/PIController/PI.onnx"),
+    samplePeriod=100,
+    batchSize=3,
+    nHistoricElements=250,
+    continuous=true,
+    useClaRaDelay=true) annotation (Placement(transformation(extent={{20,-10},{40,10}})));
+  Modelica.Blocks.Sources.Step step(height=1, startTime=100) annotation (Placement(transformation(extent={{-40,30},{-20,50}})));
+  Modelica.Blocks.Sources.Constant const(k=0) annotation (Placement(transformation(extent={{-40,-10},{-20,10}})));
+  Modelica.Blocks.Sources.Step step1(height=1, startTime=10000) annotation (Placement(transformation(extent={{-40,-50},{-20,-30}})));
+equation
+  connect(step.y, controller.u[1, 1]) annotation (Line(points={{-19,40},{0,40},{0,0},{18,0},{18,-0.666667}}, color={0,0,127}));
+  connect(const.y, controller.u[2, 1]) annotation (Line(points={{-19,0},{18,0}}, color={0,0,127}));
+  connect(step1.y, controller.u[3, 1]) annotation (Line(points={{-19,-40},{0,-40},{0,0},{18,0},{18,0.666667}}, color={0,0,127}));
+
+  annotation (
+    Icon(coordinateSystem(preserveAspectRatio=false)),
+    Diagram(coordinateSystem(preserveAspectRatio=false)),
+    experiment(
+      StopTime=36000,
+      Interval=1,
+      __Dymola_Algorithm="Dassl"));
+
+end StepTest_batched_RNN_onnx;

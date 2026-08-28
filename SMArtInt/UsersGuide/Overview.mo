@@ -12,6 +12,8 @@ model Overview
 <ul>
 <li>Dymola </li>
 <li>OpenModelica </li>
+<li>Modelon Impact</li>
+<li>MWorks Sysplorer</li>
 </ul>
 <p>With: </p>
 <ul>

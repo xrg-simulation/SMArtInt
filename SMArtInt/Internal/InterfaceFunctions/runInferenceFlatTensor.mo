@@ -12,5 +12,5 @@ external "C" NeuralNet_runInferenceFlatTensor(
     flatInputTensor,
     size(flatInputTensor, 1),
     flatOutputTensor,
-    n_out) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+    n_out) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
 end runInferenceFlatTensor;

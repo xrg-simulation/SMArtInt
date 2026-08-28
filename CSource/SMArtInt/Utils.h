@@ -12,12 +12,16 @@ namespace Utils {
 	// function to format messages to modelica
 	template<typename ... Args> std::string string_format(const std::string& format, Args ... args)
 	{
-		int size_s = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
-		if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
-		auto size = static_cast<size_t>(size_s);
-		auto buf = std::make_unique<char[]>(size);
-		std::snprintf(buf.get(), size, format.c_str(), args ...);
-		return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+		if constexpr (sizeof...(args) == 0) {
+			return format;
+		} else {
+			int size_s = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
+			if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
+			auto size = static_cast<size_t>(size_s);
+			auto buf = std::make_unique<char[]>(size);
+			std::snprintf(buf.get(), size, format.c_str(), args ...);
+			return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+		}
 	}
 
 	int compareTensorSizes(const TfLiteTensor* A, const TfLiteTensor* B, unsigned int* unmatchedVals,
@@ -29,9 +33,15 @@ namespace Utils {
 
     // methods to retreive dlls
 #ifdef _WIN32
-    std::string getTensorflowDllPathWin();
+    std::string getTensorflowDllPathWin(bool flexDelegate=false);
+    // Select ONNX Runtime DLL depending on GPU usage
+    // When useGPU is false, prefer CPU-optimized DLL name
+    std::string getOnnxRuntimeDllPathWin(bool useGPU);
 #else
-    std::string getTensorflowDllPathLinux();
+    std::string getTensorflowDllPathLinux(bool flexDelegate=false, const char* modelPath=nullptr);
+    // Select ONNX Runtime SO depending on GPU usage
+    // When useGPU is false, prefer CPU-optimized SO name
+    std::string getOnnxRuntimeDllPathLinux(bool useGPU, const char* modelPath=nullptr);
 #endif
 
 	// individual casting functions
@@ -48,17 +58,27 @@ namespace Utils {
 			}
 		};
 
-		void addStateInput(TfLiteTensor* stateInpTensor, TensorflowDllHandler* p_tfDll) {
-            auto byte_size = p_tfDll->tensorByteSize(stateInpTensor);
+		void addStateInput(TfLiteTensor* stateInpTensor, TensorflowDllHandler* p_tfDll, unsigned int batchSize = 1) {
+            auto byte_size = p_tfDll->tensorByteSize(stateInpTensor) / batchSize;
             m_stateDataByteSizes.push_back(byte_size);
 			m_stateStorage.push_back(operator new(byte_size));
 		}
 
-        void addStateInput(Ort::Value* stateInpTensor) {
-            m_stateDataByteSizes.push_back(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * \
-                sizeof(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType()));
-            m_stateStorage.push_back(operator new(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * \
-                sizeof(stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType())));
+        void addStateInput(Ort::Value* stateInpTensor, unsigned int batchSize = 1) {
+			size_t elementSize = 0;
+			const auto elementType = stateInpTensor->GetTensorTypeAndShapeInfo().GetElementType();
+			if (elementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+				elementSize = sizeof(float);
+			} else if (elementType == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
+				elementSize = sizeof(double);
+			}
+            if (elementSize == 0) throw std::invalid_argument("Unsupported tensor type in StateInputsContainer::addStateInput");
+
+            size_t totalByteSize = stateInpTensor->GetTensorTypeAndShapeInfo().GetElementCount() * elementSize;
+            size_t perBatchByteSize = totalByteSize / batchSize;
+
+            m_stateDataByteSizes.push_back(perBatchByteSize);
+            m_stateStorage.push_back(operator new(perBatchByteSize));
         }
 
 		void* at(unsigned int i) {

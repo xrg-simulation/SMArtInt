@@ -2,13 +2,15 @@
 #include <vector>
 
 InputManagement::InputManagement(bool stateful, double fixInterval,
-                                 unsigned int nInputEntries) {
+                                 unsigned int nInputEntries, unsigned int batchSize) {
 	m_active = stateful;
 	m_fixTimeIntv = fixInterval;
 	m_nInputEntries = nInputEntries;
+    m_batchSize = batchSize;
 
 	if (m_active && m_fixTimeIntv > 0) {
 		mp_flatInterpolatedInp = new double[nInputEntries];
+        m_stateBuffers.resize(m_batchSize);
 	}
 	else {
 		mp_flatInterpolatedInp = nullptr;
@@ -40,7 +42,9 @@ void InputManagement::storeInputs(double time, const double* input){
 
 void InputManagement::createEmptyStateStorage(){
     if (m_active && m_fixTimeIntv > 0) {
-        m_stateBuffer.createEmptyEntry(m_currentGridTime);
+        for (unsigned int b = 0; b < m_batchSize; ++b) {
+            m_stateBuffers[b].createEmptyEntry(m_currentGridTime);
+        }
     }
 }
 

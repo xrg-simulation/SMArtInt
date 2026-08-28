@@ -5,8 +5,8 @@ model Array2DFlatteningModel
 
   parameter Boolean useRowMajor=true "use true for row major flattening and false for column major flattening" annotation (Evaluate=true);
 
-  Modelica.Blocks.Interfaces.RealOutput flatArray[batchSize*numberOfInputs] annotation (Placement(transformation(extent={{80,-20},{120,20}})));
-  Modelica.Blocks.Interfaces.RealInput arrayIn[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
+  Modelica.Blocks.Interfaces.RealOutput flatArray[batchSize*numberOfInputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}), iconTransformation(extent={{100,-10},{120,10}})));
+  Modelica.Blocks.Interfaces.RealInput arrayIn[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}), iconTransformation(extent={{-140,-20},{-100,20}})));
 equation
 
   if useRowMajor then
@@ -27,5 +27,5 @@ equation
           extent={{-100,100},{100,-100}},
           lineColor={0,0,0},
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid),Bitmap(extent={{-80,-80},{80,80}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Flattening.png")}));
+          fillPattern=FillPattern.Solid), Bitmap(extent={{-80,-80},{80,80}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Flattening.png")}));
 end Array2DFlatteningModel;

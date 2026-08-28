@@ -10,12 +10,13 @@ class InputManagement {
 protected:
 	bool m_active = false; // true if inputs are managed - for stateful NNs
 	double m_fixTimeIntv = 0; // sample interval
+    unsigned int m_batchSize = 1; // batch size
 
 	double m_startTime = 0; // time of the first call
     double m_currentGridTime{}; // time of the current grid
 
 	NNBuffer<std::vector<double>, double> mp_inputBuffer = NNBuffer<std::vector<double>, double>(); // buffer for inputs
-	NNBuffer<Utils::StateInputsContainer, double> m_stateBuffer = NNBuffer<Utils::StateInputsContainer, double>(); // buffer for states
+	std::vector<NNBuffer<Utils::StateInputsContainer, double>> m_stateBuffers; // buffers for states, one for each batch
 
 	// arrays handling the normal function input
 	unsigned int m_nInputEntries = 0; // total number of input elements
@@ -30,7 +31,7 @@ protected:
     void createEmptyStateStorage();
 
 public:
-	InputManagement(bool stateful, double fixInterval, unsigned int nInputEntries);
+	InputManagement(bool stateful, double fixInterval, unsigned int nInputEntries, unsigned int batchSize = 1);
 	~InputManagement();
 
 	[[nodiscard]] bool isActive() const; //check if is active

@@ -82,7 +82,7 @@ model DoubleRoom_ContinuousPI
   Modelica.Blocks.Sources.Step step(
     height=150,
     offset=100,
-    startTime=10000) annotation (Placement(transformation(extent={{-112,44},{-92,64}})));
+    startTime=10000) annotation (Placement(transformation(extent={{-40,80},{-20,100}})));
   inner Modelica.Fluid.System system annotation (Placement(transformation(extent={{-80,80},{-60,100}})));
   inner Modelica.Blocks.Noise.GlobalSeed globalSeed annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
 equation

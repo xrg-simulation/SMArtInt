@@ -13,6 +13,10 @@ class SMArtIntClass
     input Boolean stateful=false;
     input Real fixEvalStep=0;
     input Integer numberOfThreads;
+    input Boolean useGPU;
+    input Integer gpuDevice;
+    input Integer executionMode;
+    input Boolean useFlexOps;
     output SMArtIntClass smartint;
   external "C" smartint = NeuralNet_createObject(
         modelicaUtilityHelper,
@@ -23,13 +27,17 @@ class SMArtIntClass
         outputSizes,
         stateful,
         fixEvalStep,
-        numberOfThreads) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+        numberOfThreads,
+        useGPU,
+        gpuDevice,
+        executionMode,
+        useFlexOps) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor
     extends Modelica.Icons.Function;
     input SMArtIntClass smartint;
-  external "C" NeuralNet_destroyObject(smartint) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+  external "C" NeuralNet_destroyObject(smartint) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end destructor;
   annotation (Icon(graphics={
         Rectangle(

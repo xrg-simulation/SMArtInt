@@ -10,7 +10,7 @@
 class InputManagementONNX : public  InputManagement {
 
 public:
-    InputManagementONNX(bool stateful, double fixInterval, unsigned int nInputEntries);
+    InputManagementONNX(bool stateful, double fixInterval, unsigned int nInputEntries, unsigned int batchSize = 1);
     void addStateOut(Ort::Value* stateOutTensor);
     bool updateStateOut(Ort::Value* stateOutTensor);
     double* handleInpts(double time, unsigned int iStep, double* flatInp, bool firstInvoke);

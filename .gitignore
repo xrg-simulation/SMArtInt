@@ -22,3 +22,4 @@ _dymWork/*
 _deploy/*
 _cmake*
 cmake_*
+/SMArtInt/Resources/Library/win64/*.def

@@ -3,7 +3,10 @@
 //
 
 #include <cstdint>
+#include <memory>
+#include <mutex>
 #include "NeuralNet.h"
+#include "OnnxRuntimeDllHandler.h"
 
 #ifndef SMARTIINT_NEURALNETONNX_H
 #define SMARTIINT_NEURALNETONNX_H
@@ -13,13 +16,16 @@ class OnnxNeuralNet :public NeuralNet
 public:
     OnnxNeuralNet(ModelicaUtilityHelper* p_modelicaUtilityHelper, const char* onnxModelPath,
                   unsigned int dymInputDim, unsigned int* p_dymInputSizes, unsigned int dymOutputDim,
-                  unsigned int* p_dymOutputSizes, bool stateful, double fixInterval, int nThreads);
+                  unsigned int* p_dymOutputSizes, bool stateful, double fixInterval, int nThreads,  bool useGpu,
+                  int gpuDevice, int executionMode);
 
     ~OnnxNeuralNet() override;
 
     void runInferenceFlatTensor(double time, double* input, unsigned int inputLength, double* output, unsigned int outputLength); // invoke the model
 
     void initializeStates(double time, double* p_stateValues, const unsigned int& nStateValues); // function to initialize states with given values
+
+    // Hinweis: Der Output-Modus wird intern automatisch gewählt (CudaPinned bei verfügbarer CUDA, sonst CPU)
 
     const char* m_modelType = "ONNX";
 
@@ -28,22 +34,42 @@ private:
 
     InputManagementONNX* mp_timeStepMngmt; // time step manager used for stateful RNNs
 
+    // Dynamic ONNX Runtime loader must outlive all Ort::* objects.
+    std::unique_ptr<OnnxRuntimeDllHandler> mp_onnxDll; 
+
     Ort::Env* mp_model{}; // pointer to model
-    Ort::SessionOptions mp_options; // pointer to model options
+    Ort::SessionOptions mp_options{nullptr}; // model options
     Ort::Session* mp_session{}; // pointer to interpreter
-    Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu( OrtDeviceAllocator, OrtMemTypeDefault); // onnx memory info
+    Ort::IoBinding* mp_binding{}; // IO binding for fast provider IO
+
+    bool m_useGPU{true}; // whether GPU with CUDA is used for inference
+    int m_gpuDeviceId{0}; // device ID of
+    ExecutionMode m_executionMode{ExecutionMode::ORT_SEQUENTIAL};
+    bool m_cudaAvailable{false}; // whether CUDA EP is active
+
+    Ort::MemoryInfo memInfo{nullptr}; // onnx memory info (CPU)
+    Ort::MemoryInfo memInfoCudaPinned{nullptr}; // onnx memory info (CudaPinned), initialized when CUDA is available
 
     std::vector<std::string> m_input_names; // vector with input names
     std::vector<std::int64_t> m_input_shapes; // vector with input shapes
     std::vector<std::string> m_output_names; // vector with input names
     std::vector<std::int64_t> m_output_shapes; // vector with input shapes
 
-    std::vector<float>* input_data{}; // data for feature input
-    std::vector<std::vector<float>>* tensorData{}; // data for state inputs
+    ONNXTensorElementDataType m_inputElementType{ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED};
+
+    std::vector<float>* input_data{}; // data for feature input (float models)
+    std::vector<double>* input_data_double{}; // data for feature input (double models)
+    std::vector<std::vector<float>>* tensorData{}; // data for state inputs (float models)
+    std::vector<std::vector<double>>* tensorDataDouble{}; // data for state inputs (double models)
     std::vector<Ort::Value> output_tensors; // tensors to store the results
+
+    // Persistent tensor for primary input to avoid per-step allocations
+    Ort::Value m_inputTensor{nullptr};
 
     std::vector<const char*> input_names_char; // input names as char; needed for onnx inference
     std::vector<const char*> output_names_char; // output names as char; needed for onnx inference
+
+    std::mutex m_mutex; // mutex for thread-safe destruction
 
     void loadAndInit(const char* onnxModelPath); // internal function to prepare model - called by constructor
 

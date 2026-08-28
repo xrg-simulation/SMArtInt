@@ -51,12 +51,14 @@ package UsersGuide "User's Guide"
     <h2>System Requirements</h2>
     <p>The library relies on external C-libraries and works on 64-bit Windows systems. Please ensure the following for successful use:</p>
     <ul>
-      <li>Use 64-bit Dymola (tested) or recent versions of OpenModelica
-        <ul>
-          <li>Tested for Dymola 2025x Refresh 1 and OpenModelica v1.25.1</li>
-        </ul>
-      </li>
-      <li>Set <code>Advanced.CompileWith64</code> = true in Dymola if required</li>
+    <li>Use 64-bit Dymola (tested) or recent versions of OpenModelica </li>
+    <li>Tested versions: </li><ul>
+      <li>Dymola 2026x Refresh 1 </li>
+      <li>OpenModelica v1.26.2 </li>
+      <li>Modelon Impact 4.142.3 </li>
+      <li>MWorks Sysplorer 2026b(x64) </li>
+    </ul>
+    <li>Set <code>Advanced.CompileWith64</code> = true in Dymola if required</li>
     </ul>
 
     <h2>Further Resources</h2>
