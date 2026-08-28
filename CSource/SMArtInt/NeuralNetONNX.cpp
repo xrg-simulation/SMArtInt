@@ -46,14 +46,14 @@ OnnxNeuralNet::~OnnxNeuralNet() {
     // Release session before Env (session references Env)
     delete mp_session;
     mp_session = nullptr;
-    // Release Env (Ort::Env)
-    delete mp_model;
-    mp_model = nullptr;
     // Release MemoryInfo objects
     memInfo = Ort::MemoryInfo{nullptr};
     memInfoCudaPinned = Ort::MemoryInfo{nullptr};
     // Release SessionOptions
     mp_options = Ort::SessionOptions{nullptr};
+    // Release Env (Ort::Env)
+    delete mp_model;
+    mp_model = nullptr;
     // Release heap-allocated data vectors
     delete input_data;
     input_data = nullptr;
@@ -79,7 +79,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 #ifdef _WIN32
         try {
             std::string onnxDllPath = Utils::getOnnxRuntimeDllPathWin(m_useGPU);
-            mp_modelicaUtilityHelper->ModelicaMessage(std::string("SMArtInt: Using ONNX Runtime Library: ").append(onnxDllPath).c_str());
+            mp_modelicaUtilityHelper->ModelicaMessage((std::string("SMArtInt: Using ONNX Runtime Library: ") + onnxDllPath + "\n").c_str());
             mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerWin>(onnxDllPath.c_str());
         } catch (const std::exception& ex) {
             auto msg = std::string("SMArtInt: Failed to load onnxruntime_c.dll: ") + ex.what() + "\n";
@@ -90,7 +90,7 @@ void OnnxNeuralNet::loadAndInit(const char* onnxModelPath)
 #else
         try {
             std::string onnxDllPath = Utils::getOnnxRuntimeDllPathLinux(m_useGPU, onnxModelPath);
-            mp_modelicaUtilityHelper->ModelicaMessage(std::string("SMArtInt: Using ONNX Runtime Library: ").append(onnxDllPath).c_str());
+            mp_modelicaUtilityHelper->ModelicaMessage((std::string("SMArtInt: Using ONNX Runtime Library: ") + onnxDllPath + "\n").c_str());
             mp_onnxDll = std::make_unique<OnnxRuntimeDllHandlerLinux>(onnxDllPath.c_str());
         } catch (const std::exception& ex) {
             auto msg = std::string("SMArtInt: Failed to load libonnxruntime_c.so: ") + ex.what() + "\n";
