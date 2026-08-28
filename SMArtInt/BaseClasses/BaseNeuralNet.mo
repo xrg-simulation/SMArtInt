@@ -23,7 +23,7 @@ partial model BaseNeuralNet
       group="ONNX",
       tab="Advanced",
       enable=useGPU));
-  parameter SMArtInt.BaseClasses.Types.ExecutionMode executionMode=SMArtInt.BaseClasses.Types.ExecutionMode.Sequential "Execution mode for run inference" annotation (Dialog(group="ONNX", tab="Advanced"));
+  parameter SMArtInt.Internal.Types.ExecutionMode executionMode=SMArtInt.Internal.Types.ExecutionMode.Sequential "Execution mode for run inference" annotation (Dialog(group="ONNX", tab="Advanced"));
 
 protected
   final parameter SMArtInt.Internal.ModelicaUtilityHelper modelicaUtilityHelper=SMArtInt.Internal.ModelicaUtilityHelper();

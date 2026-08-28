@@ -2,7 +2,7 @@ within SMArtInt.Internal.Utilities.SubModels;
 model RNNFlattenInput
 
   import gdv = SMArtInt.Internal.ClaRaDelay.getDelayValuesAtTimeArray;
-  import HFM = SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod;
+  import HFM = SMArtInt.Internal.Types.RNNFlatteningMethod;
 
   parameter Boolean useClaRaDelay=true;
   parameter Integer nInputs=1 "Number of inputs";
@@ -15,7 +15,7 @@ model RNNFlattenInput
 
   final parameter Integer n_tensorElements=nInputs*nHistoricElements;
 
-  parameter RNNFlatteningMethod flatteningMethod=RNNFlatteningMethod.NewFirstInputSeq annotation (Evaluate=true);
+  parameter HFM flatteningMethod=HFM.NewFirstInputSeq annotation (Evaluate=true);
 
   final parameter Modelica.Units.SI.Time startTime(fixed=false);
   Boolean sampleTrigger;
@@ -50,7 +50,7 @@ equation
 
     for t in 1:nHistoricElements loop
       for i in 1:nInputs loop
-        if flatteningMethod == RNNFlatteningMethod.NewFirstInputSeq then
+        if flatteningMethod == HFM.NewFirstInputSeq then
           if (t == 1) then
             inputFlattenTensor[(t - 1)*nInputs + i] = u[i];
           else
@@ -65,7 +65,7 @@ equation
                 i);
             end if;
           end if;
-        elseif flatteningMethod == RNNFlatteningMethod.NewFirstTimeSeq then
+        elseif flatteningMethod == HFM.NewFirstTimeSeq then
           if (t == 1) then
             inputFlattenTensor[(i - 1)*nHistoricElements + t] = u[i];
           else
@@ -80,7 +80,7 @@ equation
                 i);
             end if;
           end if;
-        elseif flatteningMethod == RNNFlatteningMethod.OldFIrstInputSeq then
+        elseif flatteningMethod == HFM.OldFIrstInputSeq then
           if (t == nHistoricElements) then
             inputFlattenTensor[(t - 1)*nInputs + i] = u[i];
           else
@@ -95,7 +95,7 @@ equation
                 i);
             end if;
           end if;
-        elseif flatteningMethod == RNNFlatteningMethod.OldFirstTimeSeq then
+        elseif flatteningMethod == HFM.OldFirstTimeSeq then
           if (t == nHistoricElements) then
             inputFlattenTensor[(i - 1)*nHistoricElements + t] = u[i];
           else
@@ -121,25 +121,25 @@ equation
 
       for t in 1:nHistoricElements loop
         for i in 1:nInputs loop
-          if flatteningMethod == RNNFlatteningMethod.NewFirstInputSeq then
+          if flatteningMethod == HFM.NewFirstInputSeq then
             if (t == 1) then
               inputFlattenTensor[(t - 1)*nInputs + i] = pre(u[i]);
             else
               inputFlattenTensor[(t - 1)*nInputs + i] = pre(inputFlattenTensor[(t - 2)*nInputs + i]);
             end if;
-          elseif flatteningMethod == RNNFlatteningMethod.NewFirstTimeSeq then
+          elseif flatteningMethod == HFM.NewFirstTimeSeq then
             if (t == 1) then
               inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(u[i]);
             else
               inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(inputFlattenTensor[(t - 1) + (i - 1)*nHistoricElements]);
             end if;
-          elseif flatteningMethod == RNNFlatteningMethod.OldFIrstInputSeq then
+          elseif flatteningMethod == HFM.OldFIrstInputSeq then
             if (t == nHistoricElements) then
               inputFlattenTensor[(t - 1)*nInputs + i] = pre(u[i]);
             else
               inputFlattenTensor[(t - 1)*nInputs + i] = pre(inputFlattenTensor[t*nInputs + i]);
             end if;
-          elseif flatteningMethod == RNNFlatteningMethod.OldFirstTimeSeq then
+          elseif flatteningMethod == HFM.OldFirstTimeSeq then
             if (t == nHistoricElements) then
               inputFlattenTensor[(i - 1)*nHistoricElements + t] = pre(u[i]);
             else

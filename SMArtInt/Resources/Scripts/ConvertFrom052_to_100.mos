@@ -1,0 +1,5 @@
+//Convert Package from SMArtInt 0.5.2 to 1.0.0
+convertClear();
+
+convertElement("SMArtInt.Blocks.EvaluateSimpleFeedForwardNeuralNetwork", "arrayIn", "u");
+convertElement("SMArtInt.Blocks.EvaluateSimpleFeedForwardNeuralNetwork", "arrayOut", "y");

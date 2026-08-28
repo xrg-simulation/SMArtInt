@@ -10,8 +10,8 @@ model Test_FlatInputHistory
     useClaRaDelay=true,
     nInputs=2,
     continuous=true,
-    flatteningMethod=SMArtInt.Internal.Utilities.SubModels.RNNFlatteningMethod.OldFirstTimeSeq,
-    u={realExpression.y,-realExpression.y}) annotation (Placement(transformation(extent={{-8,-40},{12,-20}})));
+    flatteningMethod=SMArtInt.Internal.Types.RNNFlatteningMethod.OldFirstTimeSeq,
+    u={realExpression.y,-realExpression.y}) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 equation
 
   annotation (

@@ -1,4 +1,4 @@
-within SMArtInt.Internal.Utilities.SubModels;
+within SMArtInt.Internal.Types;
 type RNNFlatteningMethod = enumeration(
     NewFirstTimeSeq,
     NewFirstInputSeq,

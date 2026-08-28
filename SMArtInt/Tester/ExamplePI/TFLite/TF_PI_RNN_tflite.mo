@@ -1,7 +1,7 @@
 within SMArtInt.Tester.ExamplePI.TFLite;
 model TF_PI_RNN_tflite
 
-  Modelica.Blocks.Interfaces.RealOutput y annotation (Placement(transformation(extent={{94,-10},{114,10}})));
+  Modelica.Blocks.Interfaces.RealOutput y annotation (Placement(transformation(extent={{100,-10},{120,10}})));
 
   Blocks.EvaluateRecurrentNeuralNet evaluateRecurrentNeuralNet(
     final samplePeriod=100,
@@ -13,12 +13,12 @@ model TF_PI_RNN_tflite
     final nHistoricElements=250,
     continuous=true,
     pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/PIController/PI.tflite")) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
-  Modelica.Blocks.Interfaces.RealInput u annotation (Placement(transformation(extent={{-126,-20},{-86,20}})));
+  Modelica.Blocks.Interfaces.RealInput u annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
 
 equation
 
-  connect(u, evaluateRecurrentNeuralNet.u[1, 1]) annotation (Line(points={{-106,0},{-59,0},{-59,0},{-10,0}}, color={0,0,127}));
-  connect(evaluateRecurrentNeuralNet.y[1, 1], y) annotation (Line(points={{10,0},{98,0}}, color={0,0,127}));
+  connect(u, evaluateRecurrentNeuralNet.u[1, 1]) annotation (Line(points={{-120,0},{-12,0}},                 color={0,0,127}));
+  connect(evaluateRecurrentNeuralNet.y[1, 1], y) annotation (Line(points={{11,0},{110,0}},color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>The model was created with the script PI.py located in <a href=\"modelica://SMArtInt/Resources/ExampleNeuralNets/PIController/\">ExampleNeuralNets\\PIController\\</a> with setting rnn_type = RnnType.RNN in line 74.</p>
 </html>"), Icon(graphics={Bitmap(extent={{-100,-100},{100,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}));

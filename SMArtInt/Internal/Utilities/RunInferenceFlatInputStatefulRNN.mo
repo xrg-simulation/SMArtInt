@@ -11,8 +11,8 @@ model RunInferenceFlatInputStatefulRNN
   final parameter Modelica.Units.SI.Time startTime(fixed=false);
   Boolean sampleTrigger;
 
-  Modelica.Blocks.Interfaces.RealInput u[nTotalInputsElements] annotation (Placement(transformation(extent={{-120,-20},{-80,20}}), iconTransformation(extent={{-120,-20},{-80,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y[nTotalOutputElements] annotation (Placement(transformation(extent={{80,-20},{120,20}}), iconTransformation(extent={{80,-20},{120,20}})));
+  Modelica.Blocks.Interfaces.RealInput u[nTotalInputsElements] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}),iconTransformation(extent={{-140,-20},{-100,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[nTotalOutputElements] annotation (Placement(transformation(extent={{100,-10},{120,10}}),iconTransformation(extent={{100,-10},{120,10}})));
 
 initial equation
   startTime = time;
@@ -42,5 +42,5 @@ equation
           extent={{-100,100},{100,-100}},
           pattern=LinePattern.None,
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid),Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
+          fillPattern=FillPattern.Solid),Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference_Run.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
 end RunInferenceFlatInputStatefulRNN;

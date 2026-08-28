@@ -9,7 +9,7 @@ model RunInterferenceRNN
 
   parameter Boolean continuous=false;
   parameter Boolean useClaRaDelay=true "Switch between available delay types: Clara and MSL";
-  parameter SubModels.RNNFlatteningMethod flatteningMethod=SubModels.RNNFlatteningMethod.OldFIrstInputSeq;
+  parameter Types.RNNFlatteningMethod flatteningMethod=Types.RNNFlatteningMethod.OldFIrstInputSeq;
   parameter Boolean returnSequences=false;
 
   parameter Integer batchSize=1;
@@ -27,8 +27,8 @@ model RunInterferenceRNN
   // final flat tensor for the AI model (Batch * Window * Features)
   Real[batchSize*nHistoricElements*nInputs] finalFlatTensor;
 
-  Modelica.Blocks.Interfaces.RealInput u[batchSize,nInputs] annotation (Placement(transformation(extent={{-120,-20},{-80,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y[batchSize,nOutputs] annotation (Placement(transformation(extent={{78,-20},{118,20}})));
+  Modelica.Blocks.Interfaces.RealInput u[batchSize,nInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[batchSize,nOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}), iconTransformation(extent={{100,-10},{120,10}})));
   SubModels.RNNFlattenInput flattenedHistory[batchSize](
     each useClaRaDelay=useClaRaDelay,
     each nInputs=nInputs,
@@ -42,7 +42,7 @@ model RunInterferenceRNN
     each nHistoricElements=nHistoricElements,
     each flatteningMethod=flatteningMethod) annotation (HideResult=not returnSequences, Placement(transformation(extent={{-10,-40},{10,-20}})));
 
-  Modelica.Blocks.Interfaces.RealOutput ySequences[if returnSequences then batchSize else 1,if returnSequences then nOutputs else 1,if returnSequences then nHistoricElements else 1]=y_sequences if returnSequences annotation (Placement(transformation(extent={{80,-80},{120,-40}})));
+  Modelica.Blocks.Interfaces.RealOutput ySequences[if returnSequences then batchSize else 1,if returnSequences then nOutputs else 1,if returnSequences then nHistoricElements else 1]=y_sequences if returnSequences annotation (Placement(transformation(extent={{100,-70},{120,-50}}), iconTransformation(extent={{100,-70},{120,-50}})));
 
 equation
 
@@ -84,5 +84,5 @@ equation
           extent={{-100,100},{100,-100}},
           pattern=LinePattern.None,
           fillColor={255,255,255},
-          fillPattern=FillPattern.Solid), Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
+          fillPattern=FillPattern.Solid), Bitmap(extent={{-102,-100},{102,100}}, fileName="modelica://SMArtInt/Resources/Images/Icon_Inference_Run.png")}), Diagram(coordinateSystem(preserveAspectRatio=false)));
 end RunInterferenceRNN;
