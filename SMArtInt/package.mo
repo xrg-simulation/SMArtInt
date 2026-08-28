@@ -19,6 +19,9 @@ package SMArtInt
 </html>"),
     Icon(graphics={Bitmap(extent={{-95,-95},{95,95}}, fileName="modelica://SMArtInt/Resources/Images/SMArtInt_Icon.png")}),
     conversion(from(
+        version="0.5.1",
+        to="0.5.2",
+        script="modelica://SMArtInt/Resources/Scripts/ConvertFrom051_to_052.mos"), from(
         version="0.5.2",
         to="1.0.0",
         script="modelica://SMArtInt/Resources/Scripts/ConvertFrom052_to_100.mos")),
