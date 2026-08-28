@@ -19,19 +19,19 @@ class SMArtIntClass
     input Boolean useFlexOps;
     output SMArtIntClass smartint;
   external "C" smartint = NeuralNet_createObject(
-      modelicaUtilityHelper,
-      pathToAIModel,
-      n_inputDim,
-      inputSizes,
-      n_outputDim,
-      outputSizes,
-      stateful,
-      fixEvalStep,
-      numberOfThreads,
-      useGPU,
-      gpuDevice,
-      executionMode,
-      useFlexOps) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
+        modelicaUtilityHelper,
+        pathToAIModel,
+        n_inputDim,
+        inputSizes,
+        n_outputDim,
+        outputSizes,
+        stateful,
+        fixEvalStep,
+        numberOfThreads,
+        useGPU,
+        gpuDevice,
+        executionMode,
+        useFlexOps) annotation (Library={"SMArtInt","tensorflowlite_c","onnxruntime_c","onnxruntime_c_cpu"}, LibraryDirectory="modelica://SMArtInt/Resources/Library");
   end constructor;
 
   function destructor

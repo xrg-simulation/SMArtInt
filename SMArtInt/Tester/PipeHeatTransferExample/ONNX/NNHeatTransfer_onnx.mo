@@ -10,6 +10,6 @@ equation
   Nus = pipeLocalHeatTransfer.Nu[:];
 
   connect(Expr_Res.y, pipeLocalHeatTransfer.Re) annotation (Line(points={{-39,20},{-20,20},{-20,6},{-12,6}}, color={0,0,127}));
-  connect(Expr_Prs.y, pipeLocalHeatTransfer.Pr) annotation (Line(points={{-39,0},{-12,0}},           color={0,0,127}));
-  connect(Expr_dByLs.y, pipeLocalHeatTransfer.dByL) annotation (Line(points={{-39,-20},{-20,-20},{-20,-6},{-12,-6}},            color={0,0,127}));
+  connect(Expr_Prs.y, pipeLocalHeatTransfer.Pr) annotation (Line(points={{-39,0},{-12,0}}, color={0,0,127}));
+  connect(Expr_dByLs.y, pipeLocalHeatTransfer.dByL) annotation (Line(points={{-39,-20},{-20,-20},{-20,-6},{-12,-6}}, color={0,0,127}));
 end NNHeatTransfer_onnx;

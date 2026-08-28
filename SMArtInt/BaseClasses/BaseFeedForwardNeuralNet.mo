@@ -17,7 +17,7 @@ partial model BaseFeedForwardNeuralNet
   Internal.Utilities.SubModels.Array2DDeflatteningModel array2DDeflatteningModel(final numberOfOutput=numberOfOutputs, final batchSize=batchSize) annotation (Placement(transformation(extent={{20,-10},{40,10}})));
 equation
   connect(array2DFlatteningModel.flatArray, runInference.u) annotation (Line(points={{-19,0},{-12,0}}, color={0,0,127}));
-  connect(runInference.y, array2DDeflatteningModel.flatArray) annotation (Line(points={{10,0},{18,0}},   color={0,0,127}));
+  connect(runInference.y, array2DDeflatteningModel.flatArray) annotation (Line(points={{10,0},{18,0}}, color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>This is a specialized version of the BaseGenericNeuralNet. It can be used for neural networks which use several scalar inputs and outputs. The user has to create the wanted inputs and has to connect them to the input of the block array2DFlatteningModel. This input has the same shape [batchSize, numberOfInputs] of the input used in the tensorflow model. The individual input have to be fed into the last dimension. A batch size can be used simultaneously calculation.</p>
 <p>The example <a href=\"modelica://SMArtInt.Tester.PipeHeatTransferExample.TFLite.PipeLocalHeatTransfer_smallNN\">PipeLocalHeatTransfer_smallNN </a>extends this model.</p>

@@ -1,13 +1,13 @@
 within SMArtInt.Blocks;
 model EvaluateRecurrentNeuralNet
   extends BaseClasses.BaseRecurrentNeuralNet(runInterferenceHistory(flatteningMethod=SMArtInt.Internal.Types.RNNFlatteningMethod.OldFIrstInputSeq));
-  Modelica.Blocks.Interfaces.RealInput u[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}),iconTransformation(extent={{-140,-20},{-100,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y[batchSize,numberOfOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}),iconTransformation(extent={{100,-10},{120,10}})));
-  Modelica.Blocks.Interfaces.RealOutput ySequences[batchSize,numberOfOutputs,nHistoricElements] if returnSequences annotation (Placement(transformation(extent={{100,-60},{120,-40}}),iconTransformation(extent={{100,-60},{120,-40}})));
+  Modelica.Blocks.Interfaces.RealInput u[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}), iconTransformation(extent={{-140,-20},{-100,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[batchSize,numberOfOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}), iconTransformation(extent={{100,-10},{120,10}})));
+  Modelica.Blocks.Interfaces.RealOutput ySequences[batchSize,numberOfOutputs,nHistoricElements] if returnSequences annotation (Placement(transformation(extent={{100,-60},{120,-40}}), iconTransformation(extent={{100,-60},{120,-40}})));
 
 equation
   connect(u, runInterferenceHistory.u) annotation (Line(points={{-120,0},{-10,0}}, color={0,0,127}));
-  connect(runInterferenceHistory.y, y) annotation (Line(points={{9.8,0},{110,0}}, color={0,0,127}));
+  connect(runInterferenceHistory.y, y) annotation (Line(points={{11,0},{110,0}}, color={0,0,127}));
   connect(runInterferenceHistory.ySequences, ySequences) annotation (Line(points={{10,-6},{40,-6},{40,-50},{110,-50}}, color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>Use this block if you want to include a recurrent neural network in Modelica.</p>

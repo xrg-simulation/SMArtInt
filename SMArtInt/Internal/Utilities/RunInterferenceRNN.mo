@@ -1,7 +1,7 @@
 within SMArtInt.Internal.Utilities;
 model RunInterferenceRNN
 
-   // general parameters
+  // general parameters
   parameter Integer nInputs=1 "Number of scalar inputs";
   parameter Integer nOutputs=1 "Number of scalar outputs";
   parameter Modelica.Units.SI.Time samplePeriod=0.1 "sampling period/interval";

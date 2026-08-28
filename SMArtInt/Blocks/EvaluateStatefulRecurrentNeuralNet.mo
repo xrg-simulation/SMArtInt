@@ -1,11 +1,11 @@
 within SMArtInt.Blocks;
 model EvaluateStatefulRecurrentNeuralNet
   extends BaseClasses.BaseStatefulRecurrentNeuralNet;
-  Modelica.Blocks.Interfaces.RealInput u[batchSize, numberOfInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}),iconTransformation(extent={{-140,-20},{-100,20}})));
-  Modelica.Blocks.Interfaces.RealOutput y[batchSize,  numberOfOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}),iconTransformation(extent={{100,-10},{120,10}})));
+  Modelica.Blocks.Interfaces.RealInput u[batchSize,numberOfInputs] annotation (Placement(transformation(extent={{-140,-20},{-100,20}}), iconTransformation(extent={{-140,-20},{-100,20}})));
+  Modelica.Blocks.Interfaces.RealOutput y[batchSize,numberOfOutputs] annotation (Placement(transformation(extent={{100,-10},{120,10}}), iconTransformation(extent={{100,-10},{120,10}})));
 equation
   connect(array2DFlatteningModel.arrayIn, u) annotation (Line(points={{-42,0},{-120,0}}, color={0,0,127}));
-  connect(array2DDeflatteningModel.arrayOut, y) annotation (Line(points={{41,0},{110,0}},   color={0,0,127}));
+  connect(array2DDeflatteningModel.arrayOut, y) annotation (Line(points={{41,0},{110,0}}, color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>Use this block if you want to include a recurrent neural network in Modelica which has been created with the flag stateful=True in TensorFlow. Please notice, that TFLite is not capable to handle the stateful states internally. Therefore, the neural network has to be created with access to all states as additional inputs and outputs. In this context the inputs and outputs have to be additional access points to the neural networks. SMArtInt will handle the updates of the states by storing the values of the state outputs and feed them back into the state inputs. Therefore, for all states matching in- and output have to exist. When creating the neural network the user has to take care of this. The stateful PI controller created in the script <a href=\"modelica://SMArtInt/Resources/ExampleNeuralNets/PIController/\">ExampleNeuralNets/PIController/PI.py</a> gives an example how to expose the states as in- an outputs.</p>
 <p>Please place this block in your own model. After that</p>

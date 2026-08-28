@@ -11,11 +11,11 @@ model PipeLocalHeatTransfer_onnx
     numberOfInputs=3,
     numberOfOutputs=1,
     batchSize=batchSize,
-    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt//Resources//ExampleNeuralNets//NNHeatTransfer//model.onnx"))         annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt//Resources//ExampleNeuralNets//NNHeatTransfer//model.onnx")) annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 equation
-  connect(Re, evalNN.u[:, 1]) annotation (Line(points={{-120,60},{-40,60},{-40,0},{-12,0}},  color={0,0,127}));
-  connect(Pr, evalNN.u[:, 2]) annotation (Line(points={{-120,0},{-12,0}},  color={0,0,127}));
-  connect(dByL, evalNN.u[:, 3]) annotation (Line(points={{-120,-60},{-40,-60},{-40,0},{-12,0}},  color={0,0,127}));
+  connect(Re, evalNN.u[:, 1]) annotation (Line(points={{-120,60},{-40,60},{-40,0},{-12,0}}, color={0,0,127}));
+  connect(Pr, evalNN.u[:, 2]) annotation (Line(points={{-120,0},{-12,0}}, color={0,0,127}));
+  connect(dByL, evalNN.u[:, 3]) annotation (Line(points={{-120,-60},{-40,-60},{-40,0},{-12,0}}, color={0,0,127}));
   connect(Nu, evalNN.y[:, 1]) annotation (Line(points={{110,0},{11,0}}, color={0,0,127}));
   annotation (Documentation(info="<html>
 <p>The model was created with the script createLocalHeatTransferNN.py located in <a href=\"modelica://SMArtInt/Resources/ExampleNeuralNets/NNHeatTransfer/\">ExampleNeuralNets\\NNHeatTransfer\\</a> with setting preset = \"large\" in line 76.</p>

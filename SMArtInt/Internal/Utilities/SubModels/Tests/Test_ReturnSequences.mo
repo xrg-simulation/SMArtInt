@@ -1,7 +1,7 @@
 within SMArtInt.Internal.Utilities.SubModels.Tests;
 model Test_ReturnSequences
   extends Modelica.Icons.Example;
-  Blocks.EvaluateRecurrentNeuralNet                     SeqFalse(
+  Blocks.EvaluateRecurrentNeuralNet SeqFalse(
     final samplePeriod=1,
     final numberOfInputs=1,
     final numberOfOutputs=2,
@@ -10,15 +10,14 @@ model Test_ReturnSequences
     useClaRaDelay=true,
     final nHistoricElements=10,
     continuous=true,
-    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/ReturnSequencesTester/accumulatorRNN_last.tflite"))
-                     annotation (Placement(transformation(extent={{20,10},{40,30}})));
+    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/ReturnSequencesTester/accumulatorRNN_last.tflite")) annotation (Placement(transformation(extent={{20,10},{40,30}})));
   Modelica.Blocks.Sources.Ramp ramp(
     height=10,
     duration=10,
     offset=0,
     startTime=0) annotation (Placement(transformation(extent={{-40,10},{-20,30}})));
   Modelica.Blocks.Sources.Constant const(k=1) annotation (Placement(transformation(extent={{-40,-30},{-20,-10}})));
-  Blocks.EvaluateRecurrentNeuralNet                     SeqTrue(
+  Blocks.EvaluateRecurrentNeuralNet SeqTrue(
     final samplePeriod=1,
     final numberOfInputs=1,
     final numberOfOutputs=2,
@@ -27,12 +26,10 @@ model Test_ReturnSequences
     useClaRaDelay=true,
     final nHistoricElements=10,
     continuous=true,
-    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/ReturnSequencesTester/accumulatorRNN_seq.tflite"))
-                     annotation (Placement(transformation(extent={{20,-30},{40,-10}})));
+    pathToAIModel=Modelica.Utilities.Files.loadResource("modelica://SMArtInt/Resources/ExampleNeuralNets/ReturnSequencesTester/accumulatorRNN_seq.tflite")) annotation (Placement(transformation(extent={{20,-30},{40,-10}})));
 equation
-  connect(ramp.y, SeqFalse.u[1, 1]) annotation (Line(points={{-19,20},{18,20},{18,19.5}},  color={0,0,127}));
-  connect(const.y, SeqTrue.u[2, 1]) annotation (Line(points={{-19,-20},{17,-20},{17,-19.5},{18,-19.5}},
-                                                                                  color={0,0,127}));
+  connect(ramp.y, SeqFalse.u[1, 1]) annotation (Line(points={{-19,20},{18,20},{18,19.5}}, color={0,0,127}));
+  connect(const.y, SeqTrue.u[2, 1]) annotation (Line(points={{-19,-20},{17,-20},{17,-19.5},{18,-19.5}}, color={0,0,127}));
   connect(ramp.y, SeqTrue.u[1, 1]) annotation (Line(points={{-19,20},{0,20},{0,-20},{18,-20}}, color={0,0,127}));
   connect(const.y, SeqFalse.u[2, 1]) annotation (Line(points={{-19,-20},{0,-20},{0,20},{18,20}}, color={0,0,127}));
   annotation (
@@ -40,22 +37,18 @@ equation
     Diagram(coordinateSystem(preserveAspectRatio=false)),
     experiment(StopTime=20, __Dymola_Algorithm="Dassl"),
     Documentation(figures={Figure(
-            title="Plot_Sequences",
-            preferred=true,
-            plots={Plot(curves={Curve(x=time, y=SeqTrue.ySequences[1, 1, 1]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 2]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 3]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 4]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 5]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 6]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 7]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 8]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 9]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 10])})}),Figure(
-            title="Plot_Sequences_Input",
-            preferred=true,
-            plots={Plot(
-              curves={Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[1]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[2]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[3]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[4]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[5]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[6]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[7]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[8]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[9]),Curve(
-                x=time,
-                y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[10])})}),Figure(
-            title="Plot_Sequences_Output",
-            preferred=true,
-            plots={Plot(curves={Curve(x=time, y=SeqTrue.y[1, 1]),Curve(x=time, y=SeqTrue.y[1, 2]),Curve(x=time, y=SeqTrue.y[2, 1]),Curve(x=time, y=SeqTrue.y[2, 2]),Curve(x=time, y=SeqFalse.y[1, 1]),Curve(x=time, y=SeqFalse.y[1, 2]),Curve(x=time, y=SeqFalse.y[2, 1]),Curve(x=time, y=SeqFalse.y[2, 2])})}),Figure(
+          title="Plot_Sequences",
+          preferred=true,
+          plots={Plot(curves={Curve(x=time, y=SeqTrue.ySequences[1, 1, 1]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 2]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 3]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 4]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 5]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 6]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 7]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 8]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 9]),Curve(x=time, y=SeqTrue.ySequences[1, 1, 10])})}),Figure(
+          title="Plot_Sequences_Input",
+          preferred=true,
+          plots={Plot(curves={Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[1]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[2]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[3]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[4]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[5]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[6]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[7]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[8]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[9]),Curve(x=time, y=SeqTrue.runInterferenceHistory.flattenedHistory[1].inputFlattenTensor[10])})}),Figure(
+          title="Plot_Sequences_Output",
+          preferred=true,
+          plots={Plot(curves={Curve(x=time, y=SeqTrue.y[1, 1]),Curve(x=time, y=SeqTrue.y[1, 2]),Curve(x=time, y=SeqTrue.y[2, 1]),Curve(x=time, y=SeqTrue.y[2, 2]),Curve(x=time, y=SeqFalse.y[1, 1]),Curve(x=time, y=SeqFalse.y[1, 2]),Curve(x=time, y=SeqFalse.y[2, 1]),Curve(x=time, y=SeqFalse.y[2, 2])})}),Figure(
           title="Plot_Sequences_constInput",
           preferred=true,
-          plots={Plot(curves={Curve(x=time, y=SeqTrue.ySequences[2, 1, 1]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 2]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 3]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 4]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 5]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 6]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 7]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 8]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 9]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 10])})})},
-                                                                                                                                                                                                        info="<html>
+          plots={Plot(curves={Curve(x=time, y=SeqTrue.ySequences[2, 1, 1]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 2]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 3]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 4]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 5]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 6]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 7]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 8]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 9]),Curve(x=time, y=SeqTrue.ySequences[2, 1, 10])})})}, info="<html>
   <body>
     <h2 style=\"color: #ffaa00;\">
       Test_ReturnSequences – 2-Output Linear Integrator RNN Example

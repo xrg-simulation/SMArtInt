@@ -16,7 +16,8 @@ equation
           lineColor={0,0,0},
           fillColor={255,255,255},
           fillPattern=FillPattern.Solid,
-          lineThickness=0.5),                                            Text(
+          lineThickness=0.5),
+        Text(
           extent={{-90,74},{86,-68}},
           textColor={124,124,124},
           textString=".dll /.so"),
