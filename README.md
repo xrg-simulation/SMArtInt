@@ -2,11 +2,13 @@
 
 This is the new home for the library. The old repository with double ii is still available [here](https://github.com/xrg-simulation/SMArtIInt).
 
-The **SMArtInt Library** is designed to integrate various artificial intelligence (AI) models seamlessly into Modelica-based simulation tools. **SMArtInt**, short for **S**imple **M**odelica **Art**ificial **I**ntelligence I**nt**erface, provides a user-friendly interface that bridges advanced AI capabilities with the power of Modelica simulations, enhancing both modeling efficiency and simulation accuracy.
+The **SMArtInt Library** is designed to integrate various artificial intelligence (AI) models seamlessly into Modelica-based simulation tools. **SMArtInt**, short for **S**imple **M**odelica **Art**ificial **I**ntelligence I**nt**erface, provides a user-friendly interface that bridges advanced AI capabilities with the power of Modelica simulations, enhancing both modeling efficiency and simulation accuracy. Please note, that  an extended commercial version SMArtInt+ provides more valuable features such as geeneration of neural networks from Modelica models. For more information please contact XRG Simulation GmbH. 
 
 Currently, it supports the following tools
 1. Dymola
 2. OpenModelica
+3. Modelon Impact
+4. MWORKS.Sysplorer
 
 with 
 
